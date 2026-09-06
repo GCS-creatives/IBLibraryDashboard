@@ -256,6 +256,24 @@ button {
   width: 100%;
 }
 
+.card-title.clickable,
+.soi-bar.clickable,
+.banner-header.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.card-title.clickable:hover,
+.banner-header.clickable:hover {
+  opacity: 0.85;
+}
+
+.cycle-hint {
+  margin-left: auto;
+  opacity: 0.55;
+  flex-shrink: 0;
+}
+
 .title-badge {
   width: 30px;
   height: 30px;
@@ -450,6 +468,57 @@ button {
   border: none;
 }
 
+.fs-side-panel {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fs-clock, .fs-timer {
+  background: rgba(6, 26, 62, 0.72);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: var(--white);
+  backdrop-filter: blur(2px);
+}
+
+.fs-clock-time {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.fs-clock-date {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.7);
+}
+
+.fs-timer-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.fs-timer-time {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.fs-timer-status {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.65);
+}
+
+.fs-timer-done .fs-timer-time {
+  color: #FF8B7A;
+}
+
 /* ---------- ATL / spotlight list rows ---------- */
 
 .spotlight-row {
@@ -592,6 +661,22 @@ button {
   font-size: 1.6rem;
   font-weight: 800;
   color: var(--green);
+}
+
+.timer-display {
+  font-size: clamp(1.6rem, 3vw + 1rem, 2.2rem);
+  font-weight: 700;
+  color: var(--navy);
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-display.timer-done {
+  color: #C0392B;
+}
+
+.timer-status {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
 }
 
 /* ---------- Bottom nav ---------- */

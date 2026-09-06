@@ -6,31 +6,47 @@ A teacher-managed library dashboard for the Promethean Board, with a student-fac
 Display Mode and a PIN-protected Admin Mode. Built with React + Vite, deployed on
 Netlify, content stored in Netlify Blobs. Icons via `lucide-react`.
 
-## What's built in this first pass
+## What's built
 
-**Fully wired (Display + Admin + storage):**
-- Header, Statement of Inquiry (with restore-default), Today's Inquiry Questions
-- Library Learning Space media stage (embed + full-screen expand/collapse)
-- ATL Skill Spotlight & Learner Profile Spotlight (display only for now — Admin can
-  hold a specific set via the Inquiry Questions/Focus panels' pattern; spotlight-specific
-  Admin editors are the next piece to add)
-- Complete 10-attribute Learner Profile strip
-- Today's Focus, live Clock, Voice Level (0–2 selectable, 3 defined but locked)
-- Bottom nav + all student-safe overlays: Library Rules (general, checkout, yellow
-  tag/RYA, media office), The Garage, DOER Maker Space, Instructional Space, Paisley
-  Shelves, Lowrance Shelves, Special Collections, Research Help/eResources
-- Admin Mode: PIN gate, Statement of Inquiry bank, Inquiry Questions, Media, Today's
-  Focus (with HOLD), Voice Level, Special Collections, Research/eResources links, and
-  editable text for every rule/space rule set
+**Display Mode:** Header, Statement of Inquiry, Today's Inquiry Questions, Library
+Learning Space (saved-link library with full-screen expand), ATL Skill Spotlight,
+Learner Profile Spotlight, Today's Focus, the 10-attribute Learner Profile strip,
+live Clock, Voice Level, a Timer/countdown, bottom nav, and every student-safe
+overlay (Library Rules, The Garage, DOER Maker Space, Instructional Space, Paisley
+Shelves, Lowrance Shelves, Special Collections, Links).
 
-**Not yet built (flagged so nothing is silently missing):**
-- Admin editors specifically for ATL Spotlight and Learner Profile Spotlight banks
-  (rotation banks exist in storage; UI to add/select them isn't wired yet)
-- SCHEDULE-based rotation (date-range assignment) — AUTO/HOLD exist, SCHEDULE doesn't yet
-- Multilingual/DLI content toggles
-- Announcements bank UI
+**Tap-to-cycle:** the title bar of any rotating card (Inquiry Questions, ATL
+Spotlight, Learner Profile Spotlight, Today's Focus, Statement of Inquiry, and
+Library Learning Space) is tappable — it advances to the next saved item. This is
+intentionally **local to the browser tab and not persisted**: it resets on reload
+and never touches Netlify Blobs, so it can only browse content Grace already
+approved in Admin Mode, never add or change anything. That's what lets it work
+without an Admin login.
 
-Let me know which of these you want next and I'll add them the same way.
+**Timer:** configured only in Admin Mode (label + duration, Start/Pause/Reset).
+The countdown itself is stored in Netlify Blobs, so it's visible read-only on the
+main Display and in the full-screen media overlay (top-left, alongside the clock),
+and survives a page refresh mid-countdown.
+
+**Full-screen media:** the clock and timer stay visible (top-left) the entire time
+media is expanded, so you can present without losing track of time.
+
+**Admin Mode:** PIN gate (defaults to `0000`, changeable from a panel inside Admin
+— see below), full editors for every content bank above, plus Rules, Space
+notes, Special Collections, Research/eResources links, Announcements, and
+multilingual (English/Spanish) toggles.
+
+**Content banks are pre-filled** with real starter content (6+ options each for
+Inquiry Questions, ATL Spotlight, Today's Focus; all 10 for Learner Profile
+Spotlight) so rotation has real variety on day one. The Statement of Inquiry is
+deliberately left with just the one yearlong default — the build spec calls for
+that to stay a stable anchor rather than auto-populated alternates, so extra
+statements are left for Grace to add intentionally in Admin Mode.
+
+**Not yet built:**
+- SCHEDULE-based rotation (date-range assignment) — AUTO/HOLD/CUSTOM exist, SCHEDULE is per-item on some banks but not exposed everywhere
+- Multilingual translations are English-only by default — Grace fills in Spanish per item in Admin Mode as needed
+
 
 ## Local development
 

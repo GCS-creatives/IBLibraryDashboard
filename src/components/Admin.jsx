@@ -186,29 +186,53 @@ function VoicePanel({ bank, onSave }) {
 }
 
 /* ---------- Media ---------- */
-function MediaPanel({ bank, onSave }) {
-  const current = bank.current || { type: 'iframe', url: '', title: '' };
-  const [type, setType] = useState(current.type);
-  const [url, setUrl] = useState(current.url);
-  const [title, setTitle] = useState(current.title);
+/* ---------- Timer ---------- */
+function TimerPanel({ timer, onSave }) {
+  const [label, setLabel] = useState(timer.label || 'Class Timer');
+  const [minutes, setMinutes] = useState(Math.round((timer.durationSeconds || 900) / 60));
 
-  const save = () => onSave({ ...bank, current: url ? { type, url, title } : null });
-  const clear = () => { setUrl(''); setTitle(''); onSave({ ...bank, current: null }); };
+  const isRunning = !!timer.endsAt;
+
+  const applyDuration = () => {
+    const seconds = Math.max(1, Math.round(Number(minutes) || 0)) * 60;
+    onSave({ ...timer, label, durationSeconds: seconds, remainingSeconds: seconds, endsAt: null });
+  };
+
+  const start = () => {
+    const base = timer.remainingSeconds > 0 ? timer.remainingSeconds : timer.durationSeconds;
+    onSave({ ...timer, label, endsAt: Date.now() + base * 1000 });
+  };
+
+  const pause = () => {
+    const remaining = timer.endsAt ? Math.max(0, Math.round((timer.endsAt - Date.now()) / 1000)) : timer.remainingSeconds;
+    onSave({ ...timer, label, remainingSeconds: remaining, endsAt: null });
+  };
+
+  const reset = () => {
+    onSave({ ...timer, label, remainingSeconds: timer.durationSeconds, endsAt: null });
+  };
 
   return (
-    <Panel title="Library Learning Space Media">
-      <select value={type} onChange={(e) => setType(e.target.value)}>
-        <option value="iframe">Website / Google Slides / Canva (embed URL)</option>
-        <option value="image">Image</option>
-      </select>
-      <input type="text" placeholder="URL" value={url} onChange={(e) => setUrl(e.target.value)} />
-      <input type="text" placeholder="Title / caption" value={title} onChange={(e) => setTitle(e.target.value)} />
+    <Panel title="Timer / Countdown">
+      <input type="text" placeholder="Label (e.g. Class Timer)" value={label} onChange={(e) => setLabel(e.target.value)} />
       <div className="row">
-        <button className="btn-primary" onClick={save}>Save Media</button>
-        <button className="btn-secondary" onClick={clear}>Clear</button>
+        <input
+          type="number"
+          min="1"
+          style={{ width: 90 }}
+          value={minutes}
+          onChange={(e) => setMinutes(e.target.value)}
+        />
+        <span style={{ alignSelf: 'center', fontSize: '0.85rem', color: 'var(--ink-soft)' }}>minutes</span>
+        <button className="btn-secondary" onClick={applyDuration}>Set Duration</button>
+      </div>
+      <div className="row">
+        <button className="btn-primary" onClick={start} disabled={isRunning}>Start</button>
+        <button className="btn-secondary" onClick={pause} disabled={!isRunning}>Pause</button>
+        <button className="btn-secondary" onClick={reset}>Reset</button>
       </div>
       <p style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>
-        For YouTube, use the embed URL form: https://www.youtube.com/embed/VIDEO_ID
+        {isRunning ? 'Running — visible on the display and in full-screen media view.' : 'Paused. Students only see the countdown, not these controls.'}
       </p>
     </Panel>
   );
@@ -421,7 +445,20 @@ export default function AdminMode({ banks, updateBank, sessionToken, onExit }) {
           onSave={(v) => save('todaysFocus', v)}
         />
 
-        <MediaPanel bank={banks.media} onSave={(v) => save('media', v)} />
+        <BankEditor
+          title="Library Learning Space — Saved Links"
+          bank={banks.media}
+          idPrefix="media"
+          spanishEnabled={false}
+          fields={[
+            { key: 'type', label: 'Type', type: 'select', options: ['iframe', 'image'] },
+            { key: 'title', label: 'Title / caption', type: 'text' },
+            { key: 'url', label: 'URL', type: 'text' }
+          ]}
+          onSave={(v) => save('media', v)}
+        />
+
+        <TimerPanel timer={banks.timer} onSave={(v) => save('timer', v)} />
         <VoicePanel bank={banks.voiceLevel} onSave={(v) => save('voiceLevel', v)} />
         <AnnouncementsPanel bank={banks.announcements} spanishEnabled={spanishEnabled} onSave={(v) => save('announcements', v)} />
         <LanguageSettingsPanel bank={banks.languageSettings} onSave={(v) => save('languageSettings', v)} />

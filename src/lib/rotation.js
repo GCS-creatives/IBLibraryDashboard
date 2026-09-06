@@ -68,3 +68,26 @@ export function localize(item, field, language) {
   }
   return item[field] || '';
 }
+
+/** Advances a bank to the next item after whatever is currently active,
+ * pinning it there (mode: 'hold') so manual taps behave predictably —
+ * the same "hold" state Admin Mode uses, just driven from the display.
+ * Wraps back to the first item after the last. Returns the same bank
+ * unchanged if it has no items to cycle through. */
+export function advanceToNext(bank, date = new Date()) {
+  const items = bank?.items || [];
+  if (items.length === 0) return bank;
+  const active = resolveActive(bank, date);
+  const currentIndex = active ? items.findIndex((i) => i.id === active.id) : -1;
+  const nextIndex = (currentIndex + 1) % items.length;
+  return { ...bank, mode: 'hold', heldId: items[nextIndex].id };
+}
+
+/** Same idea, for the Statement of Inquiry's activeId model. */
+export function advanceSOI(soiBank) {
+  const items = soiBank?.items || [];
+  if (items.length === 0) return soiBank;
+  const currentIndex = items.findIndex((i) => i.id === soiBank.activeId);
+  const nextIndex = (currentIndex + 1) % items.length;
+  return { ...soiBank, activeId: items[nextIndex].id };
+}

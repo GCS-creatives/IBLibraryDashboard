@@ -2,10 +2,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   BookOpen, Search, Lightbulb, MessageCircle, Target, ShieldCheck, Sprout, Clock, Volume2,
   Star, Brain, Shield, Globe2, Heart, Mountain, Scale, Cloud, ListChecks, Camera, Wrench,
-  Users, Library, Link2, Globe, Maximize2, X
+  Users, Library, Link2, Globe, Maximize2, X, ChevronRight, Timer as TimerIcon
 } from 'lucide-react';
 import { checkPin } from '../lib/blobsClient.js';
-import { resolveActive, resolveActiveSOI, localize, isWithinSchedule } from '../lib/rotation.js';
+import { resolveActive, resolveActiveSOI, localize, isWithinSchedule, advanceToNext, advanceSOI } from '../lib/rotation.js';
 import {
   RulesModal, SpaceModal, CollectionsModal, GenericInfoModal
 } from './Overlays.jsx';
@@ -134,11 +134,13 @@ function ImgBadge({ src, tone = 'navy', alt = '' }) {
   );
 }
 
-function BannerHeader({ icon: Icon, iconSrc, tone, children }) {
+function BannerHeader({ icon: Icon, iconSrc, tone, children, onCycle, count }) {
+  const clickable = onCycle && count > 1;
   return (
-    <div className={`banner-header tone-bg-${tone}`}>
+    <div className={`banner-header tone-bg-${tone}${clickable ? ' clickable' : ''}`} onClick={clickable ? onCycle : undefined}>
       {iconSrc ? <img className="banner-header-icon" src={iconSrc} alt="" /> : <Icon size={17} strokeWidth={2.2} />}
       <span>{children}</span>
+      <CycleHint onCycle={onCycle} count={count} />
     </div>
   );
 }
@@ -158,23 +160,34 @@ function AnnouncementsBanner({ bank, language }) {
   );
 }
 
-function StatementOfInquiry({ soi, language }) {
+function CycleHint({ onCycle, count }) {
+  if (!onCycle || !count || count < 2) return null;
+  return <ChevronRight size={16} className="cycle-hint" />;
+}
+
+function StatementOfInquiry({ soi, language, onCycle }) {
   const active = resolveActiveSOI(soi);
+  const clickable = onCycle && (soi.items || []).length > 1;
   return (
-    <div className="soi-bar">
+    <div className={`soi-bar${clickable ? ' clickable' : ''}`} onClick={clickable ? onCycle : undefined}>
       <ImgBadge src={iconStatementLeaf} tone="green" alt="" />
       <span className="label">Our Statement of Inquiry</span>
       <span>{localize(active, 'text', language)}</span>
+      <CycleHint onCycle={onCycle} count={(soi.items || []).length} />
     </div>
   );
 }
 
-function InquiryQuestions({ bank, language }) {
+function InquiryQuestions({ bank, language, onCycle }) {
   const q = resolveActive(bank);
   if (!q) return null;
+  const clickable = onCycle && (bank.items || []).length > 1;
   return (
     <div className="card">
-      <p className="card-title"><IconBadge icon={MessageCircle} tone="green" />Today's Inquiry Questions</p>
+      <p className={`card-title${clickable ? ' clickable' : ''}`} onClick={clickable ? onCycle : undefined}>
+        <IconBadge icon={MessageCircle} tone="green" />Today's Inquiry Questions
+        <CycleHint onCycle={onCycle} count={bank.items.length} />
+      </p>
       <div className="iq-item factual">
         <span className="iq-type" style={{ color: 'var(--green)' }}><img className="iq-icon" src={iconFactual} alt="" /> Factual</span>
         {localize(q, 'factual', language)}
@@ -191,11 +204,15 @@ function InquiryQuestions({ bank, language }) {
   );
 }
 
-function LibraryLearningSpace({ media, onExpand }) {
-  const current = media?.current;
+function LibraryLearningSpace({ media, onExpand, onCycle }) {
+  const current = resolveActive(media);
+  const clickable = onCycle && (media.items || []).length > 1;
   return (
     <div className="card">
-      <p className="card-title"><IconBadge icon={BookOpen} tone="navy" />Library Learning Space</p>
+      <p className={`card-title${clickable ? ' clickable' : ''}`} onClick={clickable ? onCycle : undefined}>
+        <IconBadge icon={BookOpen} tone="navy" />Library Learning Space
+        <CycleHint onCycle={onCycle} count={media.items.length} />
+      </p>
       <div className="learning-space" onClick={onExpand}>
         {!current && (
           <>
@@ -207,7 +224,7 @@ function LibraryLearningSpace({ media, onExpand }) {
                 Ideas &middot; People &middot; Perspectives &middot; Change
               </div>
               <div style={{ fontSize: '0.8rem', opacity: 0.85 }}>
-                Add a video, slideshow, website, or resource in Admin Mode.
+                Add a link in Admin Mode, then tap the title above to select it.
               </div>
             </div>
           </>
@@ -223,10 +240,60 @@ function LibraryLearningSpace({ media, onExpand }) {
   );
 }
 
-function MediaFullscreen({ media, onClose }) {
-  const current = media?.current;
+function FullscreenClock() {
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const timeStr = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+  return (
+    <div className="fs-clock">
+      <div className="fs-clock-time">{timeStr}</div>
+      <div className="fs-clock-date">{dateStr}</div>
+    </div>
+  );
+}
+
+function useTimerCountdown(timer) {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    if (!timer?.endsAt) return undefined;
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [timer?.endsAt]);
+
+  const remaining = timer?.endsAt
+    ? Math.max(0, Math.round((timer.endsAt - now) / 1000))
+    : (timer?.remainingSeconds ?? 0);
+  const mm = String(Math.floor(remaining / 60)).padStart(2, '0');
+  const ss = String(remaining % 60).padStart(2, '0');
+  const isRunning = !!timer?.endsAt;
+  const isDone = isRunning && remaining <= 0;
+  return { display: `${mm}:${ss}`, isRunning, isDone, remaining };
+}
+
+function FullscreenTimer({ timer }) {
+  const { display, isRunning, isDone } = useTimerCountdown(timer);
+  if (!timer) return null;
+  return (
+    <div className={`fs-timer${isDone ? ' fs-timer-done' : ''}`}>
+      <div className="fs-timer-label">{timer.label || 'Timer'}</div>
+      <div className="fs-timer-time">{display}</div>
+      {!isRunning && <div className="fs-timer-status">Paused</div>}
+    </div>
+  );
+}
+
+function MediaFullscreen({ media, timer, onClose }) {
+  const current = resolveActive(media);
   return (
     <div className="media-fullscreen-overlay">
+      <div className="fs-side-panel">
+        <FullscreenClock />
+        <FullscreenTimer timer={timer} />
+      </div>
       <div className="fs-bar">
         <button className="btn-secondary" style={{ background: 'rgba(255,255,255,0.1)', color: 'white', borderColor: 'rgba(255,255,255,0.4)' }} onClick={onClose}>
           <X size={15} /> Exit Full Screen
@@ -239,7 +306,7 @@ function MediaFullscreen({ media, onClose }) {
         )}
         {!current && (
           <div style={{ color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-            No media loaded yet.
+            No media selected yet.
           </div>
         )}
       </div>
@@ -247,12 +314,12 @@ function MediaFullscreen({ media, onClose }) {
   );
 }
 
-function ATLSpotlight({ bank, language }) {
+function ATLSpotlight({ bank, language, onCycle }) {
   const item = resolveActive(bank);
   if (!item) return null;
   return (
     <div className="card banner-card">
-      <BannerHeader iconSrc={iconAtlTarget} tone="green">ATL Skill Spotlight</BannerHeader>
+      <BannerHeader iconSrc={iconAtlTarget} tone="green" onCycle={onCycle} count={bank.items.length}>ATL Skill Spotlight</BannerHeader>
       <div className="banner-body">
         <div className="spotlight-row">
           <div className="spotlight-badge spotlight-badge-img">
@@ -269,14 +336,14 @@ function ATLSpotlight({ bank, language }) {
   );
 }
 
-function LearnerProfileSpotlight({ bank, language }) {
+function LearnerProfileSpotlight({ bank, language, onCycle }) {
   const item = resolveActive(bank);
   if (!item) return null;
   const attrLabel = language === 'es' && LP_ATTRIBUTE_ES[item.attribute] ? LP_ATTRIBUTE_ES[item.attribute] : item.attribute;
   const iconSrc = LP_ICON_IMAGES[item.attribute];
   return (
     <div className="card banner-card">
-      <BannerHeader iconSrc={iconLearnerPerson} tone="navy">Learner Profile Spotlight</BannerHeader>
+      <BannerHeader iconSrc={iconLearnerPerson} tone="navy" onCycle={onCycle} count={bank.items.length}>Learner Profile Spotlight</BannerHeader>
       <div className="banner-body">
         <div className="spotlight-row">
           <div className="spotlight-badge spotlight-badge-img">
@@ -313,13 +380,13 @@ function LearnerProfileStrip({ attributes, language }) {
   );
 }
 
-function TodaysFocus({ bank, language }) {
+function TodaysFocus({ bank, language, onCycle }) {
   const item = resolveActive(bank);
   if (!item) return null;
   const subtext = localize(item, 'subtext', language);
   return (
     <div className="card banner-card">
-      <BannerHeader iconSrc={iconFocusTarget} tone="green">Today's Focus</BannerHeader>
+      <BannerHeader iconSrc={iconFocusTarget} tone="green" onCycle={onCycle} count={bank.items.length}>Today's Focus</BannerHeader>
       <div className="banner-body">
         <div className="focus-text">{localize(item, 'text', language)}</div>
         {subtext && <div className="focus-subtext"><img className="focus-leaf-icon" src={iconFocusLeaf} alt="" /> {subtext}</div>}
@@ -327,6 +394,18 @@ function TodaysFocus({ bank, language }) {
     </div>
   );
 }
+
+function TimerCard({ timer }) {
+  const { display, isRunning, isDone } = useTimerCountdown(timer);
+  return (
+    <div className="card">
+      <p className="card-title"><IconBadge icon={TimerIcon} tone="gold" />{timer?.label || 'Timer'}</p>
+      <div className={`timer-display${isDone ? ' timer-done' : ''}`}>{display}</div>
+      <div className="timer-status">{isRunning ? 'Running' : isDone ? "Time's up" : 'Paused — set in Admin Mode'}</div>
+    </div>
+  );
+}
+
 
 function ClockCard({}) {
   const [now, setNow] = useState(new Date());
@@ -447,8 +526,32 @@ export default function DisplayMode({ banks, isFullscreen, onToggleFullscreen, o
   const [mediaExpanded, setMediaExpanded] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
   const [language, setLanguage] = useState(banks.languageSettings?.defaultLanguage || 'en');
+  // Ephemeral, local-only "tap to cycle" state. Deliberately NOT persisted
+  // to Netlify Blobs and NOT gated behind Admin login: it only ever picks
+  // among items Grace already approved in Admin Mode, and it resets on
+  // reload, so it can't be used to add/edit/remove content — just to
+  // browse the already-approved set live while presenting.
+  const [overrides, setOverrides] = useState({});
 
   const spanishEnabled = !!banks.languageSettings?.spanishEnabled;
+
+  const withHeld = (key, bank) => (key in overrides ? { ...bank, mode: 'hold', heldId: overrides[key] } : bank);
+  const cycle = (key, bank) => {
+    const next = advanceToNext(withHeld(key, bank));
+    setOverrides((o) => ({ ...o, [key]: next.heldId }));
+  };
+
+  const soiWithOverride = 'soi' in overrides ? { ...banks.statementsOfInquiry, activeId: overrides.soi } : banks.statementsOfInquiry;
+  const cycleSOI = () => {
+    const next = advanceSOI(soiWithOverride);
+    setOverrides((o) => ({ ...o, soi: next.activeId }));
+  };
+
+  const iqBank = withHeld('inquiryQuestions', banks.inquiryQuestions);
+  const atlBank = withHeld('atlSpotlights', banks.atlSpotlights);
+  const lpBank = withHeld('learnerProfileSpotlights', banks.learnerProfileSpotlights);
+  const focusBank = withHeld('todaysFocus', banks.todaysFocus);
+  const mediaBank = withHeld('media', banks.media);
 
   return (
     <div className={`app-shell${isFullscreen ? ' fullscreen-active' : ''}`}>
@@ -467,21 +570,22 @@ export default function DisplayMode({ banks, isFullscreen, onToggleFullscreen, o
       <div className="dashboard-stack">
         <AnnouncementsBanner bank={banks.announcements} language={language} />
 
-        <StatementOfInquiry soi={banks.statementsOfInquiry} language={language} />
+        <StatementOfInquiry soi={soiWithOverride} language={language} onCycle={cycleSOI} />
 
         <div className="main-row">
           <div className="col-iq">
-            <InquiryQuestions bank={banks.inquiryQuestions} language={language} />
+            <InquiryQuestions bank={iqBank} language={language} onCycle={() => cycle('inquiryQuestions', banks.inquiryQuestions)} />
             <VoiceLevelCard voiceLevel={banks.voiceLevel} />
           </div>
           <div className="col-media">
-            <LibraryLearningSpace media={banks.media} onExpand={() => setMediaExpanded(true)} />
+            <LibraryLearningSpace media={mediaBank} onExpand={() => setMediaExpanded(true)} onCycle={() => cycle('media', banks.media)} />
             <ClockCard />
+            <TimerCard timer={banks.timer} />
           </div>
           <div className="sidebar-stack">
-            <ATLSpotlight bank={banks.atlSpotlights} language={language} />
-            <LearnerProfileSpotlight bank={banks.learnerProfileSpotlights} language={language} />
-            <TodaysFocus bank={banks.todaysFocus} language={language} />
+            <ATLSpotlight bank={atlBank} language={language} onCycle={() => cycle('atlSpotlights', banks.atlSpotlights)} />
+            <LearnerProfileSpotlight bank={lpBank} language={language} onCycle={() => cycle('learnerProfileSpotlights', banks.learnerProfileSpotlights)} />
+            <TodaysFocus bank={focusBank} language={language} onCycle={() => cycle('todaysFocus', banks.todaysFocus)} />
           </div>
         </div>
 
@@ -494,7 +598,7 @@ export default function DisplayMode({ banks, isFullscreen, onToggleFullscreen, o
       />
 
       {mediaExpanded && (
-        <MediaFullscreen media={banks.media} onClose={() => setMediaExpanded(false)} />
+        <MediaFullscreen media={mediaBank} timer={banks.timer} onClose={() => setMediaExpanded(false)} />
       )}
 
       {openOverlay === 'rules' && <RulesModal rules={banks.rules} language={language} onClose={() => setOpenOverlay(null)} />}

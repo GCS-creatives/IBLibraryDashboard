@@ -30,6 +30,51 @@ export const defaultContent = {
         tags: ['Access', 'Perspective', 'Evidence'],
         schedule: null,
         es: { factual: '', conceptual: '', debatable: '', approved: false }
+      },
+      {
+        id: 'q-2',
+        factual: 'What resources can help us locate reliable information?',
+        conceptual: 'How does access influence opportunity?',
+        debatable: 'Should every resource in a shared library be available to every user in exactly the same way?',
+        tags: ['Access', 'Fairness', 'Stewardship'],
+        schedule: null,
+        es: { factual: '', conceptual: '', debatable: '', approved: false }
+      },
+      {
+        id: 'q-3',
+        factual: 'What steps help us verify that a source is credible?',
+        conceptual: 'How do our choices with shared resources affect other members of a community?',
+        debatable: 'Is finding information more important than knowing how to question it?',
+        tags: ['Credibility', 'Community', 'Responsibility'],
+        schedule: null,
+        es: { factual: '', conceptual: '', debatable: '', approved: false }
+      },
+      {
+        id: 'q-4',
+        factual: 'What tools or systems help us organize and cite the information we use?',
+        conceptual: 'How does language shape who can access and understand information?',
+        debatable: 'Should artificial intelligence tools be treated the same as any other information source?',
+        tags: ['Attribution', 'Language', 'Artificial Intelligence'],
+        schedule: null,
+        es: { factual: '', conceptual: '', debatable: '', approved: false }
+      },
+      {
+        id: 'q-5',
+        factual: 'What makes a source multilingual or culturally responsive?',
+        conceptual: 'How does representation in media shape our understanding of a community?',
+        debatable: 'Is it possible to be fully neutral when evaluating information?',
+        tags: ['Representation', 'Multilingualism', 'Media'],
+        schedule: null,
+        es: { factual: '', conceptual: '', debatable: '', approved: false }
+      },
+      {
+        id: 'q-6',
+        factual: 'What responsibilities come with borrowing and returning shared materials?',
+        conceptual: 'How does curiosity change the way we participate in a community?',
+        debatable: 'Should students have the same access to information as adults?',
+        tags: ['Stewardship', 'Curiosity', 'Agency'],
+        schedule: null,
+        es: { factual: '', conceptual: '', debatable: '', approved: false }
       }
     ]
   },
@@ -54,6 +99,38 @@ export const defaultContent = {
         text: 'I manage shared resources responsibly so they remain available to others.',
         schedule: null,
         es: { title: '', text: '', approved: false }
+      },
+      {
+        id: 'atl-3',
+        category: 'Thinking',
+        title: 'Making Connections',
+        text: 'I connect what I already know to new information to build understanding.',
+        schedule: null,
+        es: { title: '', text: '', approved: false }
+      },
+      {
+        id: 'atl-4',
+        category: 'Communication',
+        title: 'Listening',
+        text: 'I listen carefully to others so I can understand perspectives different from my own.',
+        schedule: null,
+        es: { title: '', text: '', approved: false }
+      },
+      {
+        id: 'atl-5',
+        category: 'Social',
+        title: 'Sharing Spaces',
+        text: 'I share library spaces and resources so they remain available to everyone.',
+        schedule: null,
+        es: { title: '', text: '', approved: false }
+      },
+      {
+        id: 'atl-6',
+        category: 'Research',
+        title: 'Citing Sources',
+        text: 'I give credit to the people whose ideas and words I use.',
+        schedule: null,
+        es: { title: '', text: '', approved: false }
       }
     ]
   },
@@ -76,6 +153,62 @@ export const defaultContent = {
         text: 'We ask questions and seek deeper understanding.',
         schedule: null,
         es: { text: '', approved: false }
+      },
+      {
+        id: 'lp-caring',
+        attribute: 'Caring',
+        text: 'We return materials because others need access to them and help restore shared spaces.',
+        schedule: null,
+        es: { text: '', approved: false }
+      },
+      {
+        id: 'lp-reflective',
+        attribute: 'Reflective',
+        text: 'We consider how new information has changed our thinking.',
+        schedule: null,
+        es: { text: '', approved: false }
+      },
+      {
+        id: 'lp-open-minded',
+        attribute: 'Open-minded',
+        text: 'We examine perspectives, authors, cultures, languages, and ideas beyond our own experience.',
+        schedule: null,
+        es: { text: '', approved: false }
+      },
+      {
+        id: 'lp-balanced',
+        attribute: 'Balanced',
+        text: 'We make thoughtful decisions about technology, independent reading, research, and personal responsibility.',
+        schedule: null,
+        es: { text: '', approved: false }
+      },
+      {
+        id: 'lp-communicator',
+        attribute: 'Communicator',
+        text: 'We ask questions, discuss ideas, listen, present, and communicate through multiple formats.',
+        schedule: null,
+        es: { text: '', approved: false }
+      },
+      {
+        id: 'lp-risk-taker',
+        attribute: 'Risk-taker',
+        text: 'We try unfamiliar genres, perspectives, tools, and modes of expression.',
+        schedule: null,
+        es: { text: '', approved: false }
+      },
+      {
+        id: 'lp-knowledgeable',
+        attribute: 'Knowledgeable',
+        text: 'We develop understanding through diverse information sources.',
+        schedule: null,
+        es: { text: '', approved: false }
+      },
+      {
+        id: 'lp-thinker',
+        attribute: 'Thinker',
+        text: 'We analyze evidence, question assumptions, and evaluate claims.',
+        schedule: null,
+        es: { text: '', approved: false }
       }
     ]
   },
@@ -89,8 +222,18 @@ export const defaultContent = {
       { id: 'focus-2', text: 'Ask a better question.', subtext: '', schedule: null, es: { text: '', subtext: '', approved: false } },
       { id: 'focus-3', text: 'Return what others need.', subtext: '', schedule: null, es: { text: '', subtext: '', approved: false } },
       { id: 'focus-4', text: 'Notice another perspective.', subtext: '', schedule: null, es: { text: '', subtext: '', approved: false } },
-      { id: 'focus-5', text: 'Cite what you use.', subtext: '', schedule: null, es: { text: '', subtext: '', approved: false } }
+      { id: 'focus-5', text: 'Cite what you use.', subtext: '', schedule: null, es: { text: '', subtext: '', approved: false } },
+      { id: 'focus-6', text: 'Leave the space better than you found it.', subtext: '', schedule: null, es: { text: '', subtext: '', approved: false } },
+      { id: 'focus-7', text: 'Listen before responding.', subtext: '', schedule: null, es: { text: '', subtext: '', approved: false } },
+      { id: 'focus-8', text: 'Verify before sharing.', subtext: '', schedule: null, es: { text: '', subtext: '', approved: false } }
     ]
+  },
+
+  timer: {
+    label: 'Class Timer',
+    durationSeconds: 900,
+    remainingSeconds: 900,
+    endsAt: null // epoch ms while running; null while paused/stopped
   },
 
   voiceLevel: {
@@ -104,8 +247,10 @@ export const defaultContent = {
   },
 
   media: {
-    mode: 'default',
-    current: null // { type: 'youtube'|'slides'|'pdf'|'image'|'iframe', url, title }
+    mode: 'hold', // auto | hold | custom — "select at will" = hold + heldId
+    heldId: null,
+    customValue: null, // { type, url, title }
+    items: [] // { id, type: 'iframe'|'image', url, title, schedule, es? }
   },
 
   learnerProfile: [

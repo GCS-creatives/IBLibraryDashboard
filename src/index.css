@@ -279,34 +279,37 @@ button {
 .lp-strip {
   grid-column: 1 / span 2;
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 10px 8px;
   justify-content: space-between;
+  padding: 12px;
 }
 
 .lp-attr {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  flex: 1;
-  min-width: 70px;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 56px;
 }
 
 .lp-attr .dot {
-  width: 44px;
-  height: 44px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: var(--navy);
   color: var(--white);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 0.85rem;
+  flex-shrink: 0;
 }
 
 .lp-attr span.name {
-  font-size: 0.72rem;
+  font-size: 0.66rem;
   color: var(--ink-soft);
   text-align: center;
 }

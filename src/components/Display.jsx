@@ -50,7 +50,7 @@ function AnnouncementsBanner({ bank, language }) {
   });
   if (active.length === 0) return null;
   return (
-    <div className="soi-bar" style={{ gridColumn: '1 / -1', background: '#EAF3FB', borderColor: '#3E7CB1' }}>
+    <div className="soi-bar area-ann" style={{ background: '#EAF3FB', borderColor: '#3E7CB1' }}>
       <span className="label" style={{ color: '#3E7CB1' }}>Announcement</span>
       <span>{active.map((a) => localize(a, 'text', language)).join('   \u2022   ')}</span>
     </div>
@@ -60,7 +60,7 @@ function AnnouncementsBanner({ bank, language }) {
 function StatementOfInquiry({ soi, language }) {
   const active = resolveActiveSOI(soi);
   return (
-    <div className="soi-bar">
+    <div className="soi-bar area-soi">
       <span className="label">Our Statement of Inquiry</span>
       <span>{localize(active, 'text', language)}</span>
     </div>
@@ -71,7 +71,7 @@ function InquiryQuestions({ bank, language }) {
   const q = resolveActive(bank);
   if (!q) return null;
   return (
-    <div className="card">
+    <div className="card area-iq">
       <p className="card-title">🔎 Today's Inquiry Questions</p>
       <div className="iq-item factual">
         <span className="iq-type" style={{ color: '#2E6E4E' }}>Factual</span>
@@ -92,7 +92,7 @@ function InquiryQuestions({ bank, language }) {
 function LibraryLearningSpace({ media, onExpand }) {
   const current = media?.current;
   return (
-    <div className="card learning-space-card">
+    <div className="card area-media">
       <p className="card-title">📖 Library Learning Space</p>
       <div className="learning-space" onClick={onExpand}>
         {!current && (
@@ -172,7 +172,7 @@ function LearnerProfileSpotlight({ bank, language }) {
 
 function LearnerProfileStrip({ attributes, language }) {
   return (
-    <div className="card lp-strip">
+    <div className="card lp-strip area-lp">
       {attributes.map((name) => (
         <div className="lp-attr" key={name}>
           <div className="dot">{name[0]}</div>
@@ -188,7 +188,7 @@ function TodaysFocus({ bank, language }) {
   if (!item) return null;
   const subtext = localize(item, 'subtext', language);
   return (
-    <div className="card">
+    <div className="card area-focus">
       <p className="card-title">🌱 Today's Focus</p>
       <div className="focus-text">{localize(item, 'text', language)}</div>
       {subtext && <div className="focus-subtext">{subtext}</div>}
@@ -321,14 +321,14 @@ export default function DisplayMode({ banks, isFullscreen, onToggleFullscreen, o
 
         <InquiryQuestions bank={banks.inquiryQuestions} language={language} />
         <LibraryLearningSpace media={banks.media} onExpand={() => setMediaExpanded(true)} />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="sidebar-stack area-side">
           <ATLSpotlight bank={banks.atlSpotlights} language={language} />
           <LearnerProfileSpotlight bank={banks.learnerProfileSpotlights} language={language} />
+          <ClockAndVoice voiceLevel={banks.voiceLevel} />
         </div>
 
         <LearnerProfileStrip attributes={banks.learnerProfile} language={language} />
         <TodaysFocus bank={banks.todaysFocus} language={language} />
-        <ClockAndVoice voiceLevel={banks.voiceLevel} />
       </div>
 
       <BottomNav

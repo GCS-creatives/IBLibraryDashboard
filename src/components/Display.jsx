@@ -10,6 +10,17 @@ import {
   RulesModal, SpaceModal, CollectionsModal, GenericInfoModal
 } from './Overlays.jsx';
 
+import iconInquirer from '../assets/attributes/inquirer.png';
+import iconKnowledgeable from '../assets/attributes/knowledgeable.png';
+import iconThinker from '../assets/attributes/thinker.png';
+import iconCommunicator from '../assets/attributes/communicator.png';
+import iconPrincipled from '../assets/attributes/principled.png';
+import iconOpenMinded from '../assets/attributes/open-minded.png';
+import iconCaring from '../assets/attributes/caring.png';
+import iconRiskTaker from '../assets/attributes/risk-taker.png';
+import iconBalanced from '../assets/attributes/balanced.png';
+import iconReflective from '../assets/attributes/reflective.png';
+
 const ATL_COLORS = {
   Research: '#2E6E4E',
   Thinking: '#2E6E4E',
@@ -22,6 +33,12 @@ const LP_ATTRIBUTE_ES = {
   Inquirer: 'Indagador', Knowledgeable: 'Informado', Thinker: 'Pensador',
   Communicator: 'Comunicador', Principled: 'Íntegro', 'Open-minded': 'De mente abierta',
   Caring: 'Solidario', 'Risk-taker': 'Audaz', Balanced: 'Equilibrado', Reflective: 'Reflexivo'
+};
+
+const LP_ICON_IMAGES = {
+  Inquirer: iconInquirer, Knowledgeable: iconKnowledgeable, Thinker: iconThinker,
+  Communicator: iconCommunicator, Principled: iconPrincipled, 'Open-minded': iconOpenMinded,
+  Caring: iconCaring, 'Risk-taker': iconRiskTaker, Balanced: iconBalanced, Reflective: iconReflective
 };
 
 const LP_ICONS = {
@@ -40,7 +57,7 @@ function Header({ language, onToggleLanguage, spanishEnabled }) {
   return (
     <header className="lib-header">
       <div className="brand">
-        <div className="brand-mark"><Library size={30} strokeWidth={2.2} /></div>
+        <div className="brand-mark"><Library size={20} strokeWidth={2.2} /></div>
         <div>
           <h1>PAISLEY <span className="accent">IB</span> LIBRARY</h1>
           <div className="brand-subline">
@@ -219,14 +236,14 @@ function LearnerProfileSpotlight({ bank, language }) {
   const item = resolveActive(bank);
   if (!item) return null;
   const attrLabel = language === 'es' && LP_ATTRIBUTE_ES[item.attribute] ? LP_ATTRIBUTE_ES[item.attribute] : item.attribute;
-  const AttrIcon = LP_ICONS[item.attribute] || Shield;
+  const iconSrc = LP_ICON_IMAGES[item.attribute];
   return (
     <div className="card banner-card">
       <BannerHeader icon={ShieldCheck} tone="navy">Learner Profile Spotlight</BannerHeader>
       <div className="banner-body">
         <div className="spotlight-row">
-          <div className="spotlight-badge" style={{ background: LP_COLORS[item.attribute] || 'var(--navy)' }}>
-            <AttrIcon size={16} />
+          <div className="spotlight-badge spotlight-badge-img">
+            {iconSrc ? <img src={iconSrc} alt="" /> : <Shield size={16} color="var(--navy)" />}
           </div>
           <div>
             <div style={{ fontWeight: 700, color: 'var(--navy)' }}>{attrLabel}</div>
@@ -244,10 +261,12 @@ function LearnerProfileStrip({ attributes, language }) {
       <p className="card-title full-width"><IconBadge icon={Star} tone="gold" />All Learner Profile Attributes</p>
       <div className="lp-row">
         {attributes.map((name) => {
-          const Icon = LP_ICONS[name] || Shield;
+          const iconSrc = LP_ICON_IMAGES[name];
           return (
             <div className="lp-attr" key={name}>
-              <div className="dot" style={{ background: LP_COLORS[name] || 'var(--navy)' }}><Icon size={16} /></div>
+              <div className="dot dot-img">
+                {iconSrc ? <img src={iconSrc} alt="" /> : <Shield size={16} color="var(--navy)" />}
+              </div>
               <span className="name">{language === 'es' && LP_ATTRIBUTE_ES[name] ? LP_ATTRIBUTE_ES[name] : name}</span>
             </div>
           );
@@ -396,7 +415,7 @@ export default function DisplayMode({ banks, isFullscreen, onToggleFullscreen, o
         onToggleLanguage={() => setLanguage((l) => (l === 'es' ? 'en' : 'es'))}
       />
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 24px 0' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '4px 24px 0' }}>
         <button className="btn-secondary" onClick={onToggleFullscreen}>
           <Maximize2 size={14} /> {isFullscreen ? 'Exit Full Screen' : 'Full Screen'}
         </button>

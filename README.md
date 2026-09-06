@@ -61,17 +61,27 @@ mock mode is `0000`.
    - Build command: `npm run build` (already set in `netlify.toml`)
    - Publish directory: `dist` (already set in `netlify.toml`)
 
-3. **Set environment variables** (Netlify dashboard → Site configuration →
-   Environment variables):
-   - `ADMIN_PIN` — the real PIN Grace will use to enter Admin Mode
-   - `SESSION_SECRET` — any long random string (used to sign Admin session tokens;
-     if you skip this, it falls back to `ADMIN_PIN`, which still works but is
-     slightly less secure)
+3. **(Optional) Set an environment variable** (Netlify dashboard → Site
+   configuration → Environment variables):
+   - `SESSION_SECRET` — any long random string, used to sign Admin session
+     tokens. Not required — there's a static fallback — but recommended for
+     production.
+
+   You do **not** need to set a PIN here. The Admin PIN now lives in Netlify
+   Blobs, not an env var — see below.
 
 4. **Deploy** — Netlify will build and deploy automatically. Netlify Blobs works
    out of the box on Netlify's servers with no extra setup; the site's content
    banks will start seeded with the defaults in `src/data/defaults.js` the first
    time each bank is read.
+
+## Admin PIN
+
+The first time you (or Grace) enter Admin Mode on a fresh deploy, the PIN is
+**`0000`**. Once logged in, there's a **Change Admin PIN** panel at the top of
+the Admin dashboard — set a real PIN there and it takes effect immediately for
+all future logins. The PIN is stored in Netlify Blobs (not in code, not in an
+env var), so changing it doesn't require a redeploy.
 
 5. **On the Promethean Board**, open the deployed Netlify URL and use the
    **Full Screen** button in the top right of Display Mode.

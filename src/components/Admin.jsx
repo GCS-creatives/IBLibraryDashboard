@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import BankEditor from './BankEditor.jsx';
+import { changePin } from '../lib/blobsClient.js';
 
 function useSaveToast() {
   const [msg, setMsg] = useState(null);
@@ -16,6 +17,63 @@ function Panel({ title, children }) {
       <h2>{title}</h2>
       {children}
     </div>
+  );
+}
+
+function ChangePinPanel({ sessionToken, onChanged }) {
+  const [newPin, setNewPin] = useState('');
+  const [confirmPin, setConfirmPin] = useState('');
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const submit = async () => {
+    setError('');
+    if (newPin.length < 4) {
+      setError('PIN must be at least 4 characters.');
+      return;
+    }
+    if (newPin !== confirmPin) {
+      setError('PINs don\u2019t match.');
+      return;
+    }
+    setSaving(true);
+    try {
+      await changePin(newPin, sessionToken);
+      setNewPin('');
+      setConfirmPin('');
+      onChanged();
+    } catch (err) {
+      setError(err.message || 'Could not change PIN.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Panel title="Change Admin PIN">
+      <input
+        type="password"
+        inputMode="numeric"
+        placeholder="New PIN"
+        value={newPin}
+        onChange={(e) => setNewPin(e.target.value)}
+      />
+      <input
+        type="password"
+        inputMode="numeric"
+        placeholder="Confirm new PIN"
+        value={confirmPin}
+        onChange={(e) => setConfirmPin(e.target.value)}
+      />
+      {error && <div className="error-text">{error}</div>}
+      <button className="btn-primary" onClick={submit} disabled={saving}>
+        {saving ? 'Saving…' : 'Update PIN'}
+      </button>
+      <p style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>
+        The default PIN is 0000 until you change it here. Changing it takes effect immediately —
+        you'll need the new PIN next time you enter Admin Mode.
+      </p>
+    </Panel>
   );
 }
 
@@ -74,7 +132,7 @@ function SOIPanel({ bank, spanishEnabled, onSave }) {
             {spanishEnabled && (
               <button className="mode-pill" onClick={() => { setOpenTranslate(item.id); setEsDraft(item.es?.text || ''); }}>🌐 Español</button>
             )}
-            {item.schedule && <span style={{ fontSize: '0.72rem', color: '#2E6E4E' }}>Scheduled {item.schedule.start} → {item.schedule.end}</span>}
+            {item.schedule && <span style={{ fontSize: '0.72rem', color: 'var(--green)' }}>Scheduled {item.schedule.start} → {item.schedule.end}</span>}
           </div>
           {openSchedule === item.id && (
             <div className="row" style={{ marginTop: 4 }}>
@@ -84,7 +142,7 @@ function SOIPanel({ bank, spanishEnabled, onSave }) {
             </div>
           )}
           {openTranslate === item.id && (
-            <div style={{ marginTop: 6, paddingLeft: 10, borderLeft: '2px solid #C9992E' }}>
+            <div style={{ marginTop: 6, paddingLeft: 10, borderLeft: '2px solid var(--gold)' }}>
               <textarea rows={2} value={esDraft} onChange={(e) => setEsDraft(e.target.value)} />
               <button className="btn-secondary" onClick={() => saveTranslation(item.id)}>Save Translation</button>
             </div>
@@ -120,7 +178,7 @@ function VoicePanel({ bank, onSave }) {
           </button>
         ))}
       </div>
-      <p style={{ fontSize: '0.75rem', color: '#4A5A6B' }}>
+      <p style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>
         Level 3 (Outside Voice) is defined but intentionally not selectable here.
       </p>
     </Panel>
@@ -149,7 +207,7 @@ function MediaPanel({ bank, onSave }) {
         <button className="btn-primary" onClick={save}>Save Media</button>
         <button className="btn-secondary" onClick={clear}>Clear</button>
       </div>
-      <p style={{ fontSize: '0.75rem', color: '#4A5A6B' }}>
+      <p style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>
         For YouTube, use the embed URL form: https://www.youtube.com/embed/VIDEO_ID
       </p>
     </Panel>
@@ -175,8 +233,8 @@ function StringListPanel({ title, list, esList, spanishEnabled, onSave, onSaveEs
         )}
       </div>
       {showEs && (
-        <div style={{ marginTop: 6, paddingLeft: 10, borderLeft: '2px solid #C9992E' }}>
-          <p style={{ fontSize: '0.7rem', color: '#4A5A6B' }}>One line per rule, matching the English order above.</p>
+        <div style={{ marginTop: 6, paddingLeft: 10, borderLeft: '2px solid var(--gold)' }}>
+          <p style={{ fontSize: '0.7rem', color: 'var(--ink-soft)' }}>One line per rule, matching the English order above.</p>
           <textarea rows={6} value={rawEs} onChange={(e) => setRawEs(e.target.value)} />
           <button className="btn-secondary" onClick={saveEs}>Save Spanish Version</button>
         </div>
@@ -245,7 +303,7 @@ function LanguageSettingsPanel({ bank, onSave }) {
         />
         Enable Spanish display toggle for students
       </label>
-      <p style={{ fontSize: '0.75rem', color: '#4A5A6B', marginTop: 8 }}>
+      <p style={{ fontSize: '0.75rem', color: 'var(--ink-soft)', marginTop: 8 }}>
         When enabled, a language toggle appears in the header. Translations only
         show once you've saved them yourself in each content panel below — nothing
         publishes automatically.
@@ -285,14 +343,14 @@ function AnnouncementsPanel({ bank, spanishEnabled, onSave }) {
       ))}
       <input type="text" placeholder="New announcement" value={text} onChange={(e) => setText(e.target.value)} />
       <button className="btn-primary" onClick={addItem}>Add Announcement</button>
-      <p style={{ fontSize: '0.75rem', color: '#4A5A6B' }}>
+      <p style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>
         Checked = shows on the display now. Uncheck to retire it without deleting it.
       </p>
     </Panel>
   );
 }
 
-export default function AdminMode({ banks, updateBank, onExit }) {
+export default function AdminMode({ banks, updateBank, sessionToken, onExit }) {
   const [toast, fireToast] = useSaveToast();
   const spanishEnabled = !!banks.languageSettings?.spanishEnabled;
 
@@ -309,6 +367,8 @@ export default function AdminMode({ banks, updateBank, onExit }) {
       </div>
 
       <div className="admin-grid">
+        <ChangePinPanel sessionToken={sessionToken} onChanged={() => fireToast('PIN updated')} />
+
         <SOIPanel bank={banks.statementsOfInquiry} spanishEnabled={spanishEnabled} onSave={(v) => save('statementsOfInquiry', v)} />
 
         <BankEditor

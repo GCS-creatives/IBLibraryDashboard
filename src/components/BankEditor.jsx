@@ -27,7 +27,7 @@ function FieldInputs({ fields, values, onChange, prefix = '' }) {
     <>
       {fields.map((f) => (
         <div key={f.key}>
-          <label style={{ fontSize: '0.75rem', color: '#4A5A6B' }}>{prefix}{f.label}</label>
+          <label style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>{prefix}{f.label}</label>
           {f.type === 'textarea' ? (
             <textarea
               rows={f.rows || 2}
@@ -85,7 +85,7 @@ function ItemRow({ item, fields, spanishEnabled, isHeld, onHold, onUpdate, onRem
           <button className="mode-pill" onClick={() => setShowTranslate((s) => !s)}>🌐 Español</button>
         )}
         {item.schedule && (
-          <span style={{ fontSize: '0.72rem', color: '#2E6E4E' }}>
+          <span style={{ fontSize: '0.72rem', color: 'var(--green)' }}>
             Scheduled {item.schedule.start} → {item.schedule.end}
           </span>
         )}
@@ -100,7 +100,7 @@ function ItemRow({ item, fields, spanishEnabled, isHeld, onHold, onUpdate, onRem
       )}
 
       {showTranslate && (
-        <div style={{ marginTop: 6, paddingLeft: 10, borderLeft: '2px solid #C9992E' }}>
+        <div style={{ marginTop: 6, paddingLeft: 10, borderLeft: '2px solid var(--gold)' }}>
           <FieldInputs
             fields={fields}
             values={esDraft}
@@ -110,7 +110,7 @@ function ItemRow({ item, fields, spanishEnabled, isHeld, onHold, onUpdate, onRem
           <button className="btn-secondary" style={{ padding: '4px 10px' }} onClick={saveTranslation}>
             Save Translation
           </button>
-          <p style={{ fontSize: '0.7rem', color: '#4A5A6B', marginTop: 4 }}>
+          <p style={{ fontSize: '0.7rem', color: 'var(--ink-soft)', marginTop: 4 }}>
             Saving here marks this translation as approved for the Spanish display toggle.
           </p>
         </div>

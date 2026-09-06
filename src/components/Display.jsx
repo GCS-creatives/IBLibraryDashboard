@@ -52,9 +52,9 @@ import headerDivider from '../assets/header/divider.png';
 import headerScriptTagline from '../assets/header/script-tagline.png';
 
 const ATL_COLORS = {
-  Research: '#2E6E4E',
-  Thinking: '#2E6E4E',
-  Communication: '#C9992E',
+  Research: 'var(--green)',
+  Thinking: 'var(--green)',
+  Communication: 'var(--gold)',
   'Self-Management': '#3E7CB1',
   Social: '#B8860B'
 };
@@ -176,15 +176,15 @@ function InquiryQuestions({ bank, language }) {
     <div className="card">
       <p className="card-title"><IconBadge icon={MessageCircle} tone="green" />Today's Inquiry Questions</p>
       <div className="iq-item factual">
-        <span className="iq-type" style={{ color: '#2E6E4E' }}><img className="iq-icon" src={iconFactual} alt="" /> Factual</span>
+        <span className="iq-type" style={{ color: 'var(--green)' }}><img className="iq-icon" src={iconFactual} alt="" /> Factual</span>
         {localize(q, 'factual', language)}
       </div>
       <div className="iq-item conceptual">
-        <span className="iq-type" style={{ color: '#C9992E' }}><img className="iq-icon" src={iconConceptual} alt="" /> Conceptual</span>
+        <span className="iq-type" style={{ color: 'var(--gold)' }}><img className="iq-icon" src={iconConceptual} alt="" /> Conceptual</span>
         {localize(q, 'conceptual', language)}
       </div>
       <div className="iq-item debatable">
-        <span className="iq-type" style={{ color: '#2E6E4E' }}><img className="iq-icon" src={iconDebatable} alt="" /> Debatable</span>
+        <span className="iq-type" style={{ color: 'var(--green)' }}><img className="iq-icon" src={iconDebatable} alt="" /> Debatable</span>
         {localize(q, 'debatable', language)}
       </div>
     </div>
@@ -356,7 +356,7 @@ function VoiceLevelCard({ voiceLevel }) {
         <span className="num">{level.level}</span>
         <div>
           <div style={{ fontWeight: 700 }}>{level.label}</div>
-          <div style={{ fontSize: '0.75rem', color: '#4A5A6B' }}>{level.description}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>{level.description}</div>
         </div>
       </div>
     </div>
@@ -420,8 +420,8 @@ function AdminPinModal({ onClose, onSuccess }) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="admin-login-box" onClick={(e) => e.stopPropagation()}>
-        <h2 style={{ color: '#10294A', marginTop: 0 }}>Admin Mode</h2>
-        <p style={{ color: '#4A5A6B', fontSize: '0.85rem' }}>Enter the library PIN to continue.</p>
+        <h2 style={{ color: 'var(--navy)', marginTop: 0 }}>Admin Mode</h2>
+        <p style={{ color: 'var(--ink-soft)', fontSize: '0.85rem' }}>Enter the library PIN to continue.</p>
         <input
           type="password"
           inputMode="numeric"

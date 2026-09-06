@@ -55,12 +55,17 @@ export async function setBank(bankName, value, sessionToken) {
   return res.json();
 }
 
+// Mock-mode PIN, changeable locally so the "change PIN" flow can be tested
+// without deploying. Resets to '0000' on page reload, same as content banks.
+let mockPin = '0000';
+
 export async function checkPin(pin) {
   const mock = await detectBackend();
   if (mock) {
     // Local dev fallback so Admin Mode is reachable without deploying.
-    // Real deployments verify against the ADMIN_PIN Netlify env var.
-    return pin === '0000' ? { ok: true, token: 'mock-session' } : { ok: false };
+    // Real deployments check the PIN stored in Netlify Blobs (defaults to
+    // '0000' until Grace changes it in Admin Mode).
+    return pin === mockPin ? { ok: true, token: 'mock-session' } : { ok: false };
   }
   const res = await fetch('/api/auth-check', {
     method: 'POST',
@@ -68,6 +73,27 @@ export async function checkPin(pin) {
     body: JSON.stringify({ pin })
   });
   if (!res.ok) return { ok: false };
+  return res.json();
+}
+
+export async function changePin(newPin, sessionToken) {
+  const mock = await detectBackend();
+  if (mock) {
+    mockPin = newPin;
+    return { ok: true, mock: true };
+  }
+  const res = await fetch('/api/change-pin', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${sessionToken || ''}`
+    },
+    body: JSON.stringify({ newPin })
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || 'Failed to change PIN');
+  }
   return res.json();
 }
 

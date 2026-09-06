@@ -1,11 +1,14 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import { getStore } from '@netlify/blobs';
 
 const SESSION_LENGTH_MS = 1000 * 60 * 60 * 8; // 8 hours — a school day
+export const DEFAULT_PIN = '0000';
 
 function getSecret() {
-  // Set SESSION_SECRET in Netlify's env vars for best security.
-  // Falls back to ADMIN_PIN so the app still works with just one env var set.
-  return process.env.SESSION_SECRET || process.env.ADMIN_PIN || 'change-me';
+  // Set SESSION_SECRET in Netlify's env vars for best security. Falls back
+  // to a static string — this only signs sessions, it never gates login by
+  // itself, so a missing env var doesn't block Grace from getting in.
+  return process.env.SESSION_SECRET || 'paisley-ib-library-static-fallback-secret';
 }
 
 function sign(payload) {
@@ -32,6 +35,23 @@ export function verifySessionToken(token) {
   }
 }
 
+export function issueSessionToken() {
+  return sign({ exp: Date.now() + SESSION_LENGTH_MS });
+}
+
+/** Reads the current PIN from Blobs. Returns the default ('0000') if
+ * Grace hasn't changed it yet — this is what makes 0000 work out of the
+ * box on a brand-new deploy with no setup required. */
+export async function getCurrentPin() {
+  try {
+    const store = getStore('paisley-ib-auth');
+    const stored = await store.get('pin', { type: 'text' });
+    return stored || DEFAULT_PIN;
+  } catch {
+    return DEFAULT_PIN;
+  }
+}
+
 export default async (req) => {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
@@ -44,18 +64,12 @@ export default async (req) => {
     return new Response(JSON.stringify({ error: 'Invalid JSON body' }), { status: 400 });
   }
 
-  const adminPin = process.env.ADMIN_PIN;
-  if (!adminPin) {
-    return new Response(
-      JSON.stringify({ error: 'ADMIN_PIN is not configured on the server.' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
-  }
-
+  const currentPin = await getCurrentPin();
   const suppliedPin = String(body.pin || '');
-  const a = Buffer.from(suppliedPin.padEnd(adminPin.length, ' '));
-  const b = Buffer.from(adminPin.padEnd(adminPin.length, ' '));
-  const matches = a.length === b.length && timingSafeEqual(a, b) && suppliedPin === adminPin;
+
+  const a = Buffer.from(suppliedPin.padEnd(currentPin.length, ' '));
+  const b = Buffer.from(currentPin.padEnd(currentPin.length, ' '));
+  const matches = a.length === b.length && timingSafeEqual(a, b) && suppliedPin === currentPin;
 
   if (!matches) {
     return new Response(JSON.stringify({ ok: false }), {
@@ -64,8 +78,7 @@ export default async (req) => {
     });
   }
 
-  const token = sign({ exp: Date.now() + SESSION_LENGTH_MS });
-  return new Response(JSON.stringify({ ok: true, token }), {
+  return new Response(JSON.stringify({ ok: true, token: issueSessionToken() }), {
     status: 200,
     headers: { 'Content-Type': 'application/json' }
   });

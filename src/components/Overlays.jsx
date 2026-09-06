@@ -44,7 +44,7 @@ export function SpaceModal({ title, subtitle, items, esItems, language, onClose 
   return (
     <ModalShell onClose={onClose}>
       <h2>{title}</h2>
-      {subtitle && <p style={{ color: '#4A5A6B', marginTop: -8 }}>{subtitle}</p>}
+      {subtitle && <p style={{ color: 'var(--ink-soft)', marginTop: -8 }}>{subtitle}</p>}
       <ul>{lines.map((r, i) => <li key={i}>{r}</li>)}</ul>
     </ModalShell>
   );
@@ -70,7 +70,7 @@ export function GenericInfoModal({ title, links, onClose }) {
     <ModalShell onClose={onClose}>
       <h2>{title}</h2>
       {(!links || links.length === 0) && (
-        <p style={{ color: '#4A5A6B' }}>No links added yet. Grace can add these in Admin Mode.</p>
+        <p style={{ color: 'var(--ink-soft)' }}>No links added yet. Grace can add these in Admin Mode.</p>
       )}
       <ul>
         {(links || []).map((l, i) => (

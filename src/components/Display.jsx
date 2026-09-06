@@ -196,13 +196,12 @@ function TodaysFocus({ bank, language }) {
   );
 }
 
-function ClockAndVoice({ voiceLevel }) {
+function ClockCard({}) {
   const [now, setNow] = useState(new Date());
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000 * 15);
     return () => clearInterval(t);
   }, []);
-  const level = voiceLevel.levels.find((l) => l.level === voiceLevel.current) || voiceLevel.levels[0];
   const timeStr = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   const dateStr = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
@@ -211,6 +210,15 @@ function ClockAndVoice({ voiceLevel }) {
       <p className="card-title">🕐 Current Time</p>
       <div className="clock-time">{timeStr}</div>
       <div className="clock-date">{dateStr}</div>
+    </div>
+  );
+}
+
+function VoiceLevelCard({ voiceLevel }) {
+  const level = voiceLevel.levels.find((l) => l.level === voiceLevel.current) || voiceLevel.levels[0];
+  return (
+    <div className="card">
+      <p className="card-title">🔊 Voice Level</p>
       <div className="voice-level-badge">
         <span className="num">{level.level}</span>
         <div>
@@ -231,7 +239,7 @@ function BottomNav({ onOpen, footerHint, onFooterClick }) {
     { key: 'paisleyShelves', label: 'Paisley Shelves', sub: '' },
     { key: 'lowranceShelves', label: 'Lowrance Shelves', sub: '' },
     { key: 'collections', label: 'Special Collections', sub: '' },
-    { key: 'research', label: 'Research Help / eResources', sub: '' }
+    { key: 'research', label: 'Links', sub: '' }
   ];
   return (
     <nav className="bottom-nav">
@@ -324,7 +332,8 @@ export default function DisplayMode({ banks, isFullscreen, onToggleFullscreen, o
         <div className="sidebar-stack area-side">
           <ATLSpotlight bank={banks.atlSpotlights} language={language} />
           <LearnerProfileSpotlight bank={banks.learnerProfileSpotlights} language={language} />
-          <ClockAndVoice voiceLevel={banks.voiceLevel} />
+          <ClockCard />
+          <VoiceLevelCard voiceLevel={banks.voiceLevel} />
         </div>
 
         <LearnerProfileStrip attributes={banks.learnerProfile} language={language} />
@@ -361,7 +370,7 @@ export default function DisplayMode({ banks, isFullscreen, onToggleFullscreen, o
       )}
       {openOverlay === 'research' && (
         <GenericInfoModal
-          title="Research Help / eResources"
+          title="Links"
           links={[...(banks.eResourcesLinks || []), ...(banks.researchHelpLinks || [])]}
           onClose={() => setOpenOverlay(null)}
         />

@@ -65,34 +65,57 @@ button {
 
 .lib-header .brand {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--navy);
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .lib-header .brand h1 {
   margin: 0;
   font-size: clamp(1.15rem, 1.6vw + 0.6rem, 1.8rem);
   letter-spacing: 0.02em;
-  color: var(--navy);
+  color: var(--green);
 }
 
 .lib-header .brand h1 .accent {
   color: var(--gold);
 }
 
-.lib-header .tagline {
-  margin: 2px 0 0;
-  font-size: 0.8rem;
+.brand-subline {
+  font-size: 0.68rem;
   color: var(--ink-soft);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  margin-top: 2px;
 }
 
 .lib-header .center-line {
-  font-size: clamp(0.75rem, 0.6vw + 0.6rem, 0.98rem);
+  font-size: clamp(0.8rem, 0.6vw + 0.65rem, 1rem);
   color: var(--navy);
   text-align: center;
   flex: 1;
-  min-width: 200px;
+  min-width: 220px;
+  font-style: italic;
+}
+
+.center-subline {
+  font-size: 0.62rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  font-style: normal;
+  margin-top: 3px;
 }
 
 .lib-header .side-note {
@@ -100,6 +123,16 @@ button {
   color: var(--ink-soft);
   text-align: right;
   line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.side-note-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: var(--navy);
 }
 
 /* ---------- Dashboard layout (flexbox columns — each sizes to its own
@@ -143,8 +176,14 @@ button {
   gap: 14px;
 }
 
-.bottom-row .lp-strip { flex: 2 1 0; }
-.bottom-row > .card:not(.lp-strip) { flex: 1 1 0; }
+.bottom-row .lp-strip { flex: 2.6 1 0; min-width: 0; }
+.time-voice-stack {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
 
 .soi-bar {
   background: var(--gold-soft);
@@ -181,10 +220,62 @@ button {
   font-size: clamp(0.85rem, 0.3vw + 0.8rem, 0.95rem);
   font-weight: 700;
   color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.card-title.full-width {
+  width: 100%;
+}
+
+.title-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--white);
+}
+
+.title-badge.tone-navy { background: var(--navy); }
+.title-badge.tone-green { background: var(--green); }
+.title-badge.tone-gold { background: var(--gold); }
+
+/* ---------- Banner-header cards (ATL / Learner Profile / Today's Focus) ---------- */
+
+.banner-card {
+  padding: 0 0 clamp(12px, 1.5vw, 16px) 0;
+  gap: 0;
+  overflow: hidden;
+}
+
+.banner-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 0;
+  padding: 10px clamp(12px, 1.5vw, 16px);
+  color: var(--white);
+  font-weight: 700;
+  font-size: clamp(0.8rem, 0.3vw + 0.75rem, 0.9rem);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.tone-bg-navy { background: var(--navy); }
+.tone-bg-green { background: var(--green); }
+.tone-bg-gold { background: var(--gold); }
+
+.banner-body {
+  padding: 12px clamp(12px, 1.5vw, 16px) 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 /* ---------- Inquiry questions ---------- */
@@ -195,17 +286,19 @@ button {
   border-left: 5px solid var(--line);
 }
 
-.iq-item.factual { background: #EAF3FB; border-left-color: #3E7CB1; }
-.iq-item.conceptual { background: var(--gold-soft); border-left-color: var(--gold); }
-.iq-item.debatable { background: var(--green-soft); border-left-color: var(--green); }
-
 .iq-item .iq-type {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-weight: 700;
   font-size: 0.8rem;
   text-transform: none;
   margin-bottom: 4px;
-  display: block;
 }
+
+.iq-item.factual { background: #EAF3FB; border-left-color: #3E7CB1; }
+.iq-item.conceptual { background: var(--gold-soft); border-left-color: var(--gold); }
+.iq-item.debatable { background: var(--green-soft); border-left-color: var(--green); }
 
 /* ---------- Library Learning Space ---------- */
 
@@ -298,7 +391,6 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.85rem;
   color: var(--white);
   flex-shrink: 0;
 }
@@ -306,12 +398,15 @@ button {
 /* ---------- Learner profile strip ---------- */
 
 .lp-strip {
+  padding: 12px;
+}
+
+.lp-row {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 10px 8px;
   justify-content: space-between;
-  padding: 12px;
 }
 
 .lp-attr {
@@ -332,7 +427,6 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.85rem;
   flex-shrink: 0;
 }
 
@@ -371,6 +465,14 @@ button {
 .clock-date {
   font-size: 0.85rem;
   color: var(--ink-soft);
+}
+
+.clock-tagline {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--gold);
+  margin-top: 4px;
 }
 
 .voice-level-badge {
@@ -414,19 +516,31 @@ button {
   color: var(--white);
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: var(--radius-sm);
-  padding: 10px 16px;
+  padding: 9px 14px;
   font-size: 0.85rem;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 120px;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
   flex-shrink: 0;
+}
+
+.nav-icon {
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.nav-btn-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: left;
 }
 
 .nav-btn:hover { background: rgba(255,255,255,0.16); }
 
 .nav-btn .sub {
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   color: rgba(255,255,255,0.65);
 }
 
@@ -528,6 +642,9 @@ button {
   border-radius: var(--radius-sm);
   padding: 10px 20px;
   font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .btn-secondary {
@@ -537,6 +654,9 @@ button {
   border-radius: var(--radius-sm);
   padding: 10px 20px;
   font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .error-text {
@@ -643,8 +763,17 @@ button {
     justify-content: center;
     text-align: center;
   }
+  .lib-header .brand {
+    justify-content: center;
+    width: 100%;
+  }
   .lib-header .side-note {
     text-align: center;
+    justify-content: center;
+    width: 100%;
+  }
+  .side-note-top {
+    justify-content: center;
   }
   .lib-header .center-line {
     order: 3;
@@ -665,7 +794,7 @@ button {
     text-align: center;
   }
 
-  .lp-strip {
+  .lp-row {
     justify-content: flex-start;
   }
   .lp-attr {
@@ -681,6 +810,12 @@ button {
   .admin-shell { padding: 12px; }
   .admin-topbar { flex-direction: column; align-items: flex-start; gap: 10px; }
   .admin-topbar h1 { font-size: 1.15rem; }
+
+  .brand-mark { width: 36px; height: 36px; }
+  .brand-subline, .center-subline { display: none; }
+  .side-note-top span { display: none; }
+  .banner-header { font-size: 0.72rem; padding: 8px 12px; }
+  .nav-btn .sub { display: none; }
 }
 
 @media (max-width: 700px) {
@@ -688,7 +823,7 @@ button {
     flex-direction: column;
   }
   .bottom-row .lp-strip,
-  .bottom-row > .card:not(.lp-strip) {
+  .time-voice-stack {
     flex: 1 1 auto;
     width: 100%;
   }

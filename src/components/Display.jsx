@@ -1,4 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import {
+  BookOpen, Search, Lightbulb, MessageCircle, Target, ShieldCheck, Sprout, Clock, Volume2,
+  Star, Brain, Shield, Globe2, Heart, Mountain, Scale, Cloud, ListChecks, Camera, Wrench,
+  Users, Library, Link2, Globe, Maximize2, X
+} from 'lucide-react';
 import { checkPin } from '../lib/blobsClient.js';
 import { resolveActive, resolveActiveSOI, localize, isWithinSchedule } from '../lib/rotation.js';
 import {
@@ -6,7 +11,7 @@ import {
 } from './Overlays.jsx';
 
 const ATL_COLORS = {
-  Research: '#7B4EA8',
+  Research: '#2E6E4E',
   Thinking: '#2E6E4E',
   Communication: '#C9992E',
   'Self-Management': '#3E7CB1',
@@ -19,19 +24,49 @@ const LP_ATTRIBUTE_ES = {
   Caring: 'Solidario', 'Risk-taker': 'Audaz', Balanced: 'Equilibrado', Reflective: 'Reflexivo'
 };
 
+const LP_ICONS = {
+  Inquirer: Search, Knowledgeable: BookOpen, Thinker: Brain, Communicator: MessageCircle,
+  Principled: Shield, 'Open-minded': Globe2, Caring: Heart, 'Risk-taker': Mountain,
+  Balanced: Scale, Reflective: Cloud
+};
+
+const LP_COLORS = {
+  Inquirer: 'var(--navy)', Knowledgeable: 'var(--green)', Thinker: 'var(--green)',
+  Communicator: 'var(--gold)', Principled: 'var(--navy)', 'Open-minded': 'var(--green)',
+  Caring: 'var(--gold)', 'Risk-taker': 'var(--navy)', Balanced: 'var(--green)', Reflective: 'var(--navy)'
+};
+
 function Header({ language, onToggleLanguage, spanishEnabled }) {
   return (
     <header className="lib-header">
       <div className="brand">
-        <h1>PAISLEY <span className="accent">IB</span> LIBRARY</h1>
+        <div className="brand-mark"><Library size={30} strokeWidth={2.2} /></div>
+        <div>
+          <h1>PAISLEY <span className="accent">IB</span> LIBRARY</h1>
+          <div className="brand-subline">
+            {language === 'es'
+              ? 'PERSONAS \u00b7 IDEAS \u00b7 INFORMACI\u00d3N \u00b7 UN MA\u00d1ANA MEJOR'
+              : 'PEOPLE \u00b7 IDEAS \u00b7 INFORMATION \u00b7 A BRIGHTER TOMORROW'}
+          </div>
+        </div>
       </div>
       <div className="center-line">
-        {language === 'es'
-          ? 'Indagar \u00b7 Leer \u00b7 Crear \u00b7 Conectar \u00b7 Marcar la Diferencia'
-          : 'Inquire \u00b7 Read \u00b7 Create \u00b7 Connect \u00b7 Make a Difference'}
+        <div>
+          {language === 'es'
+            ? 'Indagar \u00b7 Leer \u00b7 Crear \u00b7 Conectar \u00b7 Marcar la Diferencia'
+            : 'Inquire \u00b7 Read \u00b7 Create \u00b7 Connect \u00b7 Make a Difference'}
+        </div>
+        <div className="center-subline">
+          {language === 'es'
+            ? 'UNA BIBLIOTECA COMPARTIDA \u00b7 UNA COMUNIDAD PR\u00d3SPERA \u00b7 UN MUNDO M\u00c1S INCLUSIVO'
+            : 'A SHARED LIBRARY \u00b7 A THRIVING COMMUNITY \u00b7 A MORE INCLUSIVE WORLD'}
+        </div>
       </div>
-      <div className="side-note" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <span>People &middot; Ideas &middot; Information<br />A Shared Library</span>
+      <div className="side-note">
+        <div className="side-note-top">
+          <Globe size={20} />
+          <span>Curiosity<br />Empathy<br />Knowledge<br />Action</span>
+        </div>
         {spanishEnabled && (
           <button className="btn-secondary" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={onToggleLanguage}>
             {language === 'es' ? 'EN' : 'ES'}
@@ -39,6 +74,23 @@ function Header({ language, onToggleLanguage, spanishEnabled }) {
         )}
       </div>
     </header>
+  );
+}
+
+function IconBadge({ icon: Icon, tone = 'navy', size = 16 }) {
+  return (
+    <span className={`title-badge tone-${tone}`}>
+      <Icon size={size} strokeWidth={2.2} />
+    </span>
+  );
+}
+
+function BannerHeader({ icon: Icon, tone, children }) {
+  return (
+    <div className={`banner-header tone-bg-${tone}`}>
+      <Icon size={17} strokeWidth={2.2} />
+      <span>{children}</span>
+    </div>
   );
 }
 
@@ -61,6 +113,7 @@ function StatementOfInquiry({ soi, language }) {
   const active = resolveActiveSOI(soi);
   return (
     <div className="soi-bar">
+      <IconBadge icon={Sprout} tone="green" size={18} />
       <span className="label">Our Statement of Inquiry</span>
       <span>{localize(active, 'text', language)}</span>
     </div>
@@ -72,17 +125,17 @@ function InquiryQuestions({ bank, language }) {
   if (!q) return null;
   return (
     <div className="card col-iq">
-      <p className="card-title">🔎 Today's Inquiry Questions</p>
+      <p className="card-title"><IconBadge icon={MessageCircle} tone="green" />Today's Inquiry Questions</p>
       <div className="iq-item factual">
-        <span className="iq-type" style={{ color: '#2E6E4E' }}>Factual</span>
+        <span className="iq-type" style={{ color: '#2E6E4E' }}><Search size={14} /> Factual</span>
         {localize(q, 'factual', language)}
       </div>
       <div className="iq-item conceptual">
-        <span className="iq-type" style={{ color: '#C9992E' }}>Conceptual</span>
+        <span className="iq-type" style={{ color: '#C9992E' }}><Lightbulb size={14} /> Conceptual</span>
         {localize(q, 'conceptual', language)}
       </div>
       <div className="iq-item debatable">
-        <span className="iq-type" style={{ color: '#2E6E4E' }}>Debatable</span>
+        <span className="iq-type" style={{ color: '#2E6E4E' }}><MessageCircle size={14} /> Debatable</span>
         {localize(q, 'debatable', language)}
       </div>
     </div>
@@ -93,7 +146,7 @@ function LibraryLearningSpace({ media, onExpand }) {
   const current = media?.current;
   return (
     <div className="card col-media">
-      <p className="card-title">📖 Library Learning Space</p>
+      <p className="card-title"><IconBadge icon={BookOpen} tone="navy" />Library Learning Space</p>
       <div className="learning-space" onClick={onExpand}>
         {!current && (
           <div style={{ color: 'white', textAlign: 'center', padding: 20 }}>
@@ -110,7 +163,7 @@ function LibraryLearningSpace({ media, onExpand }) {
           <iframe src={current.url} title={current.title || 'Library media'} allow="autoplay; fullscreen" />
         )}
         {current && <div className="caption">{current.title || 'Tap to open full screen'}</div>}
-        <button className="expand-btn" onClick={(e) => { e.stopPropagation(); onExpand(); }}>⤢ Expand</button>
+        <button className="expand-btn" onClick={(e) => { e.stopPropagation(); onExpand(); }}><Maximize2 size={13} /> Expand</button>
       </div>
     </div>
   );
@@ -122,7 +175,7 @@ function MediaFullscreen({ media, onClose }) {
     <div className="media-fullscreen-overlay">
       <div className="fs-bar">
         <button className="btn-secondary" style={{ background: 'rgba(255,255,255,0.1)', color: 'white', borderColor: 'rgba(255,255,255,0.4)' }} onClick={onClose}>
-          ✕ Exit Full Screen
+          <X size={15} /> Exit Full Screen
         </button>
       </div>
       <div className="fs-content">
@@ -144,13 +197,18 @@ function ATLSpotlight({ bank, language }) {
   const item = resolveActive(bank);
   if (!item) return null;
   return (
-    <div className="card">
-      <p className="card-title">🎯 ATL Skill Spotlight</p>
-      <div className="spotlight-row">
-        <div className="spotlight-badge" style={{ background: ATL_COLORS[item.category] || '#2E6E4E' }}>★</div>
-        <div>
-          <div style={{ fontWeight: 700, color: '#10294A' }}>{item.category} — {localize(item, 'title', language)}</div>
-          <div style={{ fontSize: '0.85rem', color: '#4A5A6B' }}>{localize(item, 'text', language)}</div>
+    <div className="card banner-card">
+      <BannerHeader icon={Target} tone="green">ATL Skill Spotlight</BannerHeader>
+      <div className="banner-body">
+        <div className="spotlight-row">
+          <div className="spotlight-badge" style={{ background: ATL_COLORS[item.category] || 'var(--green)' }}>
+            <BookOpen size={16} />
+          </div>
+          <div>
+            <div style={{ fontWeight: 700, color: 'var(--navy)' }}>{item.category}</div>
+            <div style={{ fontWeight: 700, color: 'var(--navy)', marginTop: 2 }}>{localize(item, 'title', language)}</div>
+            <div style={{ fontSize: '0.85rem', color: 'var(--ink-soft)', marginTop: 4 }}>{localize(item, 'text', language)}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -161,11 +219,21 @@ function LearnerProfileSpotlight({ bank, language }) {
   const item = resolveActive(bank);
   if (!item) return null;
   const attrLabel = language === 'es' && LP_ATTRIBUTE_ES[item.attribute] ? LP_ATTRIBUTE_ES[item.attribute] : item.attribute;
+  const AttrIcon = LP_ICONS[item.attribute] || Shield;
   return (
-    <div className="card">
-      <p className="card-title">⭐ Learner Profile Spotlight</p>
-      <div style={{ fontWeight: 700, color: '#10294A' }}>{attrLabel}</div>
-      <div style={{ fontSize: '0.85rem', color: '#4A5A6B' }}>{localize(item, 'text', language)}</div>
+    <div className="card banner-card">
+      <BannerHeader icon={ShieldCheck} tone="navy">Learner Profile Spotlight</BannerHeader>
+      <div className="banner-body">
+        <div className="spotlight-row">
+          <div className="spotlight-badge" style={{ background: LP_COLORS[item.attribute] || 'var(--navy)' }}>
+            <AttrIcon size={16} />
+          </div>
+          <div>
+            <div style={{ fontWeight: 700, color: 'var(--navy)' }}>{attrLabel}</div>
+            <div style={{ fontSize: '0.85rem', color: 'var(--ink-soft)', marginTop: 4 }}>{localize(item, 'text', language)}</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -173,12 +241,18 @@ function LearnerProfileSpotlight({ bank, language }) {
 function LearnerProfileStrip({ attributes, language }) {
   return (
     <div className="card lp-strip">
-      {attributes.map((name) => (
-        <div className="lp-attr" key={name}>
-          <div className="dot">{name[0]}</div>
-          <span className="name">{language === 'es' && LP_ATTRIBUTE_ES[name] ? LP_ATTRIBUTE_ES[name] : name}</span>
-        </div>
-      ))}
+      <p className="card-title full-width"><IconBadge icon={Star} tone="gold" />All Learner Profile Attributes</p>
+      <div className="lp-row">
+        {attributes.map((name) => {
+          const Icon = LP_ICONS[name] || Shield;
+          return (
+            <div className="lp-attr" key={name}>
+              <div className="dot" style={{ background: LP_COLORS[name] || 'var(--navy)' }}><Icon size={16} /></div>
+              <span className="name">{language === 'es' && LP_ATTRIBUTE_ES[name] ? LP_ATTRIBUTE_ES[name] : name}</span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -188,10 +262,12 @@ function TodaysFocus({ bank, language }) {
   if (!item) return null;
   const subtext = localize(item, 'subtext', language);
   return (
-    <div className="card">
-      <p className="card-title">🌱 Today's Focus</p>
-      <div className="focus-text">{localize(item, 'text', language)}</div>
-      {subtext && <div className="focus-subtext">{subtext}</div>}
+    <div className="card banner-card">
+      <BannerHeader icon={Sprout} tone="green">Today's Focus</BannerHeader>
+      <div className="banner-body">
+        <div className="focus-text">{localize(item, 'text', language)}</div>
+        {subtext && <div className="focus-subtext"><Sprout size={13} /> {subtext}</div>}
+      </div>
     </div>
   );
 }
@@ -207,9 +283,10 @@ function ClockCard({}) {
 
   return (
     <div className="card">
-      <p className="card-title">🕐 Current Time</p>
+      <p className="card-title"><IconBadge icon={Clock} tone="navy" />Current Time</p>
       <div className="clock-time">{timeStr}</div>
       <div className="clock-date">{dateStr}</div>
+      <div className="clock-tagline">BE CURIOUS. BE KIND. BELONG HERE.</div>
     </div>
   );
 }
@@ -218,7 +295,7 @@ function VoiceLevelCard({ voiceLevel }) {
   const level = voiceLevel.levels.find((l) => l.level === voiceLevel.current) || voiceLevel.levels[0];
   return (
     <div className="card">
-      <p className="card-title">🔊 Voice Level</p>
+      <p className="card-title"><IconBadge icon={Volume2} tone="green" />Voice Level</p>
       <div className="voice-level-badge">
         <span className="num">{level.level}</span>
         <div>
@@ -232,22 +309,25 @@ function VoiceLevelCard({ voiceLevel }) {
 
 function BottomNav({ onOpen, footerHint, onFooterClick }) {
   const buttons = [
-    { key: 'rules', label: 'Library Rules', sub: '' },
-    { key: 'garage', label: 'The Garage', sub: 'Green Screen Room' },
-    { key: 'doer', label: 'DOER Maker Space', sub: 'Create · Collaborate' },
-    { key: 'instructional', label: 'Instructional Space', sub: '' },
-    { key: 'paisleyShelves', label: 'Paisley Shelves', sub: '' },
-    { key: 'lowranceShelves', label: 'Lowrance Shelves', sub: '' },
-    { key: 'collections', label: 'Special Collections', sub: '' },
-    { key: 'research', label: 'Links', sub: '' }
+    { key: 'rules', label: 'Library Rules', sub: '', icon: ListChecks },
+    { key: 'garage', label: 'The Garage', sub: 'Green Screen Room', icon: Camera },
+    { key: 'doer', label: 'DOER Maker Space', sub: 'Create · Collaborate', icon: Wrench },
+    { key: 'instructional', label: 'Instructional Space', sub: '', icon: Users },
+    { key: 'paisleyShelves', label: 'Paisley Shelves', sub: '', icon: BookOpen },
+    { key: 'lowranceShelves', label: 'Lowrance Shelves', sub: '', icon: BookOpen },
+    { key: 'collections', label: 'Special Collections', sub: '', icon: Star },
+    { key: 'research', label: 'Links', sub: '', icon: Link2 }
   ];
   return (
     <nav className="bottom-nav">
       <div className="nav-buttons">
         {buttons.map((b) => (
           <button key={b.key} className="nav-btn" onClick={() => onOpen(b.key)}>
-            <span>{b.label}</span>
-            {b.sub && <span className="sub">{b.sub}</span>}
+            <b.icon size={16} className="nav-icon" />
+            <span className="nav-btn-text">
+              <span>{b.label}</span>
+              {b.sub && <span className="sub">{b.sub}</span>}
+            </span>
           </button>
         ))}
       </div>
@@ -318,7 +398,7 @@ export default function DisplayMode({ banks, isFullscreen, onToggleFullscreen, o
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 24px 0' }}>
         <button className="btn-secondary" onClick={onToggleFullscreen}>
-          {isFullscreen ? '⤢ Exit Full Screen' : '⤢ Full Screen'}
+          <Maximize2 size={14} /> {isFullscreen ? 'Exit Full Screen' : 'Full Screen'}
         </button>
       </div>
 
@@ -333,14 +413,16 @@ export default function DisplayMode({ banks, isFullscreen, onToggleFullscreen, o
           <div className="sidebar-stack">
             <ATLSpotlight bank={banks.atlSpotlights} language={language} />
             <LearnerProfileSpotlight bank={banks.learnerProfileSpotlights} language={language} />
-            <ClockCard />
-            <VoiceLevelCard voiceLevel={banks.voiceLevel} />
+            <TodaysFocus bank={banks.todaysFocus} language={language} />
           </div>
         </div>
 
         <div className="bottom-row">
           <LearnerProfileStrip attributes={banks.learnerProfile} language={language} />
-          <TodaysFocus bank={banks.todaysFocus} language={language} />
+          <div className="time-voice-stack">
+            <ClockCard />
+            <VoiceLevelCard voiceLevel={banks.voiceLevel} />
+          </div>
         </div>
       </div>
 

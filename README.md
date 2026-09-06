@@ -4,7 +4,7 @@
 
 A teacher-managed library dashboard for the Promethean Board, with a student-facing
 Display Mode and a PIN-protected Admin Mode. Built with React + Vite, deployed on
-Netlify, content stored in Netlify Blobs.
+Netlify, content stored in Netlify Blobs. Icons via `lucide-react`.
 
 ## What's built in this first pass
 

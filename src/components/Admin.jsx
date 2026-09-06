@@ -624,6 +624,20 @@ export default function AdminMode({ banks, updateBank, sessionToken, onExit }) {
             { key: 'title', label: 'Title / caption', type: 'text' },
             { key: 'url', label: 'URL', type: 'text' }
           ]}
+          helpText="Canva: use Share → More → Embed (not the regular share link — plain canva.link/... links are blocked from embedding by Canva itself). Google Slides: File → Share → Publish to web → Embed. YouTube: use the Share → Embed URL (youtube.com/embed/...), not a youtu.be link."
+          normalizeItem={(item) => {
+            if (item.type !== 'iframe' || !item.url) return item;
+            const url = item.url.trim();
+            // Common mistake: pasting a plain canva.com design/view link
+            // instead of the Embed link. If it's missing the embed flag,
+            // add it — this is exactly what Canva's own "Embed" option
+            // does under the hood for a standard design URL.
+            if (/canva\.com\/design\//i.test(url) && !/embed/i.test(url)) {
+              const joiner = url.includes('?') ? '&' : '?';
+              return { ...item, url: `${url}${joiner}embed` };
+            }
+            return { ...item, url };
+          }}
           onSave={(v) => save('media', v)}
         />
 

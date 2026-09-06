@@ -441,6 +441,25 @@ button {
   font-size: 0.8rem;
 }
 
+.open-new-tab-link {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(16,41,74,0.7);
+  color: var(--white);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  text-decoration: none;
+}
+
+.open-new-tab-link-fs {
+  text-decoration: none;
+}
+
 .media-fullscreen-overlay {
   position: fixed;
   inset: 0;
@@ -453,6 +472,7 @@ button {
 .media-fullscreen-overlay .fs-bar {
   display: flex;
   justify-content: flex-end;
+  gap: 10px;
   padding: 10px;
 }
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   BookOpen, Search, Lightbulb, MessageCircle, Target, ShieldCheck, Sprout, Clock, Volume2,
   Star, Brain, Shield, Globe2, Heart, Mountain, Scale, Cloud, ListChecks, Camera, Wrench,
-  Users, Library, Link2, Globe, Maximize2, X, ChevronRight, Timer as TimerIcon
+  Users, Library, Link2, Globe, Maximize2, X, ChevronRight, Timer as TimerIcon, ExternalLink
 } from 'lucide-react';
 import { checkPin } from '../lib/blobsClient.js';
 import { resolveActive, resolveActiveSOI, localize, isWithinSchedule, advanceToNext, advanceSOI } from '../lib/rotation.js';
@@ -234,6 +234,17 @@ function LibraryLearningSpace({ media, onExpand, onCycle }) {
           <iframe src={current.url} title={current.title || 'Library media'} allow="autoplay; fullscreen" />
         )}
         {current && <div className="caption">{current.title || 'Tap to open full screen'}</div>}
+        {current && current.type !== 'image' && (
+          <a
+            className="open-new-tab-link"
+            href={current.url}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <ExternalLink size={12} /> Open in new tab
+          </a>
+        )}
         <button className="expand-btn" onClick={(e) => { e.stopPropagation(); onExpand(); }}><Maximize2 size={13} /> Expand</button>
       </div>
     </div>
@@ -295,6 +306,12 @@ function MediaFullscreen({ media, timer, onClose }) {
         <FullscreenTimer timer={timer} />
       </div>
       <div className="fs-bar">
+        {current && current.type !== 'image' && (
+          <a className="btn-secondary open-new-tab-link-fs" href={current.url} target="_blank" rel="noreferrer"
+            style={{ background: 'rgba(255,255,255,0.1)', color: 'white', borderColor: 'rgba(255,255,255,0.4)' }}>
+            <ExternalLink size={14} /> Open in New Tab
+          </a>
+        )}
         <button className="btn-secondary" style={{ background: 'rgba(255,255,255,0.1)', color: 'white', borderColor: 'rgba(255,255,255,0.4)' }} onClick={onClose}>
           <X size={15} /> Exit Full Screen
         </button>

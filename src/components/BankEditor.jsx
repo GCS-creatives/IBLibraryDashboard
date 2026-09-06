@@ -139,7 +139,7 @@ function ArchivedRow({ item, fields, onRestore, onRemove }) {
  * bank shape: { mode: 'auto'|'hold'|'custom', heldId, customValue, items: [{id, schedule, es, archived, ...fields}] }
  */
 export default function BankEditor({
-  title, bank, onSave, fields, idPrefix, spanishEnabled
+  title, bank, onSave, fields, idPrefix, spanishEnabled, helpText, normalizeItem
 }) {
   const [newItem, setNewItem] = useState({});
   const [customDraft, setCustomDraft] = useState(bank.customValue || {});
@@ -177,7 +177,8 @@ export default function BankEditor({
     const id = `${idPrefix}-${Date.now()}`;
     const esBase = {};
     fields.forEach((f) => { esBase[f.key] = ''; });
-    const item = { id, schedule: null, archived: false, es: { ...esBase, approved: false }, ...newItem };
+    const cleaned = normalizeItem ? normalizeItem(newItem) : newItem;
+    const item = { id, schedule: null, archived: false, es: { ...esBase, approved: false }, ...cleaned };
     onSave({ ...bank, items: [...bank.items, item] });
     setNewItem({});
   };
@@ -222,6 +223,7 @@ export default function BankEditor({
       )}
 
       <div style={{ marginTop: 8 }}>
+        {helpText && <p style={{ fontSize: '0.75rem', color: 'var(--ink-soft)', marginBottom: 6 }}>{helpText}</p>}
         <FieldInputs
           fields={fields}
           values={newItem}

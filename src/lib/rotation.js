@@ -23,11 +23,13 @@ export function dayOfYear(date = new Date()) {
 /**
  * Resolves the active item for a bank shaped like:
  * { mode: 'auto'|'hold'|'custom', heldId, customValue, items: [...] }
- * Items may optionally carry a `schedule: { start: 'YYYY-MM-DD', end: 'YYYY-MM-DD' }`.
+ * Items may optionally carry a `schedule: { start: 'YYYY-MM-DD', end: 'YYYY-MM-DD' }`
+ * and an `archived: true` flag — archived items are excluded everywhere here
+ * (schedule, hold, and auto rotation) but stay in storage so Admin can restore them.
  */
 export function resolveActive(bank, date = new Date()) {
   if (!bank) return null;
-  const items = bank.items || [];
+  const items = (bank.items || []).filter((i) => !i.archived);
 
   const scheduled = items.find((i) => isWithinSchedule(i.schedule, date));
   if (scheduled) return scheduled;
@@ -53,7 +55,7 @@ export function resolveActive(bank, date = new Date()) {
  * Grace schedules an alternate or manually switches it). */
 export function resolveActiveSOI(soiBank, date = new Date()) {
   if (!soiBank) return null;
-  const items = soiBank.items || [];
+  const items = (soiBank.items || []).filter((i) => !i.archived);
   const scheduled = items.find((i) => isWithinSchedule(i.schedule, date));
   if (scheduled) return scheduled;
   return items.find((i) => i.id === soiBank.activeId) || items[0] || null;
@@ -72,10 +74,10 @@ export function localize(item, field, language) {
 /** Advances a bank to the next item after whatever is currently active,
  * pinning it there (mode: 'hold') so manual taps behave predictably —
  * the same "hold" state Admin Mode uses, just driven from the display.
- * Wraps back to the first item after the last. Returns the same bank
- * unchanged if it has no items to cycle through. */
+ * Wraps back to the first item after the last. Skips archived items.
+ * Returns the same bank unchanged if it has no active items to cycle through. */
 export function advanceToNext(bank, date = new Date()) {
-  const items = bank?.items || [];
+  const items = (bank?.items || []).filter((i) => !i.archived);
   if (items.length === 0) return bank;
   const active = resolveActive(bank, date);
   const currentIndex = active ? items.findIndex((i) => i.id === active.id) : -1;
@@ -85,7 +87,7 @@ export function advanceToNext(bank, date = new Date()) {
 
 /** Same idea, for the Statement of Inquiry's activeId model. */
 export function advanceSOI(soiBank) {
-  const items = soiBank?.items || [];
+  const items = (soiBank?.items || []).filter((i) => !i.archived);
   if (items.length === 0) return soiBank;
   const currentIndex = items.findIndex((i) => i.id === soiBank.activeId);
   const nextIndex = (currentIndex + 1) % items.length;

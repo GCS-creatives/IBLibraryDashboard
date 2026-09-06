@@ -51,7 +51,7 @@ function FieldInputs({ fields, values, onChange, prefix = '' }) {
   );
 }
 
-function ItemRow({ item, fields, spanishEnabled, isHeld, onHold, onUpdate, onRemove }) {
+function ItemRow({ item, fields, spanishEnabled, isHeld, onHold, onUpdate, onArchive, onRemove }) {
   const [showSchedule, setShowSchedule] = useState(!!item.schedule);
   const [showTranslate, setShowTranslate] = useState(false);
   const [start, setStart] = useState(item.schedule?.start || '');
@@ -76,7 +76,10 @@ function ItemRow({ item, fields, spanishEnabled, isHeld, onHold, onUpdate, onRem
           <input type="radio" checked={isHeld} onChange={() => onHold(item.id)} style={{ marginTop: 3 }} />
           <span>{summary}</span>
         </label>
-        <button className="btn-secondary" style={{ padding: '2px 8px' }} onClick={() => onRemove(item.id)}>Remove</button>
+        <div className="row" style={{ marginBottom: 0 }}>
+          <button className="btn-secondary" style={{ padding: '2px 8px' }} onClick={() => onArchive(item.id, true)}>Archive</button>
+          <button className="btn-secondary" style={{ padding: '2px 8px' }} onClick={() => onRemove(item.id)}>Delete</button>
+        </div>
       </div>
 
       <div className="row" style={{ marginTop: 4 }}>
@@ -119,14 +122,28 @@ function ItemRow({ item, fields, spanishEnabled, isHeld, onHold, onUpdate, onRem
   );
 }
 
+function ArchivedRow({ item, fields, onRestore, onRemove }) {
+  const summary = fields.map((f) => item[f.key]).filter(Boolean).join(' — ');
+  return (
+    <div className="row" style={{ justifyContent: 'space-between', opacity: 0.65 }}>
+      <span style={{ fontSize: '0.82rem' }}>{summary}</span>
+      <div className="row" style={{ marginBottom: 0 }}>
+        <button className="btn-secondary" style={{ padding: '2px 8px' }} onClick={() => onRestore(item.id)}>Restore</button>
+        <button className="btn-secondary" style={{ padding: '2px 8px' }} onClick={() => onRemove(item.id)}>Delete</button>
+      </div>
+    </div>
+  );
+}
+
 /**
- * bank shape: { mode: 'auto'|'hold'|'custom', heldId, customValue, items: [{id, schedule, es, ...fields}] }
+ * bank shape: { mode: 'auto'|'hold'|'custom', heldId, customValue, items: [{id, schedule, es, archived, ...fields}] }
  */
 export default function BankEditor({
   title, bank, onSave, fields, idPrefix, spanishEnabled
 }) {
   const [newItem, setNewItem] = useState({});
   const [customDraft, setCustomDraft] = useState(bank.customValue || {});
+  const [showArchived, setShowArchived] = useState(false);
 
   const setMode = (mode) => onSave({ ...bank, mode });
 
@@ -135,6 +152,19 @@ export default function BankEditor({
   const updateItem = (id, patch) => {
     const items = bank.items.map((i) => (i.id === id ? { ...i, ...patch } : i));
     onSave({ ...bank, items });
+  };
+
+  const archiveItem = (id, archived) => {
+    const items = bank.items.map((i) => (i.id === id ? { ...i, archived } : i));
+    // If we just archived the item that was held, release the hold so
+    // resolveActive falls back to auto rotation instead of pointing at
+    // something that's no longer eligible to show.
+    const patch = { ...bank, items };
+    if (archived && bank.mode === 'hold' && bank.heldId === id) {
+      patch.mode = 'auto';
+      patch.heldId = null;
+    }
+    onSave(patch);
   };
 
   const removeItem = (id) => {
@@ -147,12 +177,15 @@ export default function BankEditor({
     const id = `${idPrefix}-${Date.now()}`;
     const esBase = {};
     fields.forEach((f) => { esBase[f.key] = ''; });
-    const item = { id, schedule: null, es: { ...esBase, approved: false }, ...newItem };
+    const item = { id, schedule: null, archived: false, es: { ...esBase, approved: false }, ...newItem };
     onSave({ ...bank, items: [...bank.items, item] });
     setNewItem({});
   };
 
   const saveCustom = () => onSave({ ...bank, mode: 'custom', customValue: customDraft });
+
+  const activeItems = bank.items.filter((i) => !i.archived);
+  const archivedItems = bank.items.filter((i) => i.archived);
 
   return (
     <div className="admin-panel">
@@ -170,7 +203,7 @@ export default function BankEditor({
         </div>
       )}
 
-      {bank.items.map((item) => (
+      {activeItems.map((item) => (
         <ItemRow
           key={item.id}
           item={item}
@@ -179,9 +212,14 @@ export default function BankEditor({
           isHeld={bank.mode === 'hold' && bank.heldId === item.id}
           onHold={setHeld}
           onUpdate={updateItem}
+          onArchive={archiveItem}
           onRemove={removeItem}
         />
       ))}
+
+      {activeItems.length === 0 && (
+        <p style={{ fontSize: '0.8rem', color: 'var(--ink-soft)' }}>Nothing active — add one below, or restore an archived item.</p>
+      )}
 
       <div style={{ marginTop: 8 }}>
         <FieldInputs
@@ -191,6 +229,21 @@ export default function BankEditor({
         />
         <button className="btn-primary" onClick={addItem}>Add to Bank</button>
       </div>
+
+      {archivedItems.length > 0 && (
+        <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid #DCE3E0' }}>
+          <button className="mode-pill" onClick={() => setShowArchived((s) => !s)}>
+            {showArchived ? 'Hide' : 'Show'} archived ({archivedItems.length})
+          </button>
+          {showArchived && (
+            <div style={{ marginTop: 8 }}>
+              {archivedItems.map((item) => (
+                <ArchivedRow key={item.id} item={item} fields={fields} onRestore={(id) => archiveItem(id, false)} onRemove={removeItem} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

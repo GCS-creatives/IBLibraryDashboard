@@ -230,6 +230,7 @@ export const defaultContent = {
   },
 
   timer: {
+    enabled: false, // whether the timer card/overlay shows on Display at all
     label: 'Class Timer',
     durationSeconds: 900,
     remainingSeconds: 900,

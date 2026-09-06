@@ -84,6 +84,7 @@ function SOIPanel({ bank, spanishEnabled, onSave }) {
   const [openTranslate, setOpenTranslate] = useState(null);
   const [scheduleDraft, setScheduleDraft] = useState({ start: '', end: '' });
   const [esDraft, setEsDraft] = useState('');
+  const [showArchived, setShowArchived] = useState(false);
 
   const setActive = (id) => onSave({ ...bank, activeId: id });
 
@@ -92,7 +93,7 @@ function SOIPanel({ bank, spanishEnabled, onSave }) {
     const id = `soi-${Date.now()}`;
     const items = [...bank.items, {
       id, text: draft.trim(), isDefault: false, status: 'active',
-      schedule: null, es: { text: '', approved: false }
+      schedule: null, archived: false, es: { text: '', approved: false }
     }];
     onSave({ ...bank, items, activeId: id });
     setDraft('');
@@ -119,13 +120,46 @@ function SOIPanel({ bank, spanishEnabled, onSave }) {
     setOpenTranslate(null);
   };
 
+  const archiveItem = (id, archived) => {
+    const items = bank.items.map((i) => (i.id === id ? { ...i, archived } : i));
+    const patch = { ...bank, items };
+    // Archiving the currently-active statement falls back to the default
+    // rather than leaving the display pointed at something hidden.
+    if (archived && bank.activeId === id) {
+      const def = bank.items.find((i) => i.isDefault);
+      if (def) patch.activeId = def.id;
+    }
+    onSave(patch);
+  };
+
+  const removeItem = (id) => {
+    const items = bank.items.filter((i) => i.id !== id);
+    const patch = { ...bank, items };
+    if (bank.activeId === id) {
+      const def = items.find((i) => i.isDefault);
+      if (def) patch.activeId = def.id;
+    }
+    onSave(patch);
+  };
+
+  const activeItems = bank.items.filter((i) => !i.archived);
+  const archivedItems = bank.items.filter((i) => i.archived);
+
   return (
     <Panel title="Statement of Inquiry">
-      {bank.items.map((item) => (
+      {activeItems.map((item) => (
         <div key={item.id} style={{ borderBottom: '1px solid #DCE3E0', paddingBottom: 8, marginBottom: 8 }}>
-          <div className="row" style={{ alignItems: 'center' }}>
-            <input type="radio" checked={bank.activeId === item.id} onChange={() => setActive(item.id)} />
-            <span style={{ fontSize: '0.85rem' }}>{item.text}{item.isDefault ? ' (default)' : ''}</span>
+          <div className="row" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+            <label style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: '0.85rem' }}>
+              <input type="radio" checked={bank.activeId === item.id} onChange={() => setActive(item.id)} />
+              <span>{item.text}{item.isDefault ? ' (default)' : ''}</span>
+            </label>
+            {!item.isDefault && (
+              <div className="row" style={{ marginBottom: 0 }}>
+                <button className="btn-secondary" style={{ padding: '2px 8px' }} onClick={() => archiveItem(item.id, true)}>Archive</button>
+                <button className="btn-secondary" style={{ padding: '2px 8px' }} onClick={() => removeItem(item.id)}>Delete</button>
+              </div>
+            )}
           </div>
           <div className="row">
             <button className="mode-pill" onClick={() => { setOpenSchedule(item.id); setScheduleDraft(item.schedule || { start: '', end: '' }); }}>📅 Schedule</button>
@@ -159,6 +193,23 @@ function SOIPanel({ bank, spanishEnabled, onSave }) {
         <button className="btn-primary" onClick={addCustom}>Add &amp; Activate</button>
         <button className="btn-secondary" onClick={restoreDefault}>Restore Default</button>
       </div>
+
+      {archivedItems.length > 0 && (
+        <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid #DCE3E0' }}>
+          <button className="mode-pill" onClick={() => setShowArchived((s) => !s)}>
+            {showArchived ? 'Hide' : 'Show'} archived ({archivedItems.length})
+          </button>
+          {showArchived && archivedItems.map((item) => (
+            <div className="row" key={item.id} style={{ justifyContent: 'space-between', opacity: 0.65, marginTop: 8 }}>
+              <span style={{ fontSize: '0.82rem' }}>{item.text}</span>
+              <div className="row" style={{ marginBottom: 0 }}>
+                <button className="btn-secondary" style={{ padding: '2px 8px' }} onClick={() => archiveItem(item.id, false)}>Restore</button>
+                <button className="btn-secondary" style={{ padding: '2px 8px' }} onClick={() => removeItem(item.id)}>Delete</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </Panel>
   );
 }
@@ -186,12 +237,124 @@ function VoicePanel({ bank, onSave }) {
 }
 
 /* ---------- Media ---------- */
-/* ---------- Timer ---------- */
+/* ---------- Export / Import ---------- */
+function BackupPanel({ banks, updateBank, fireToast }) {
+  const [importError, setImportError] = useState('');
+  const [pendingImport, setPendingImport] = useState(null);
+  const fileInputRef = React.useRef(null);
+
+  const exportAll = () => {
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      app: 'paisley-ib-library',
+      banks
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const dateStr = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `paisley-ib-library-backup-${dateStr}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    fireToast('Exported');
+  };
+
+  const onFileChosen = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImportError('');
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        const importedBanks = parsed && parsed.banks && typeof parsed.banks === 'object' ? parsed.banks : parsed;
+        if (!importedBanks || typeof importedBanks !== 'object') {
+          throw new Error('This file doesn\u2019t look like a Paisley IB Library backup.');
+        }
+        // Only accept keys that are actually known content banks — never
+        // let an imported file introduce arbitrary/unexpected data.
+        const knownKeys = Object.keys(banks);
+        const matched = Object.keys(importedBanks).filter((k) => knownKeys.includes(k));
+        if (matched.length === 0) {
+          throw new Error('No recognized content banks found in that file.');
+        }
+        setPendingImport({ importedBanks, matched });
+      } catch (err) {
+        setImportError(err.message || 'Could not read that file.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const confirmImport = () => {
+    if (!pendingImport) return;
+    pendingImport.matched.forEach((key) => updateBank(key, pendingImport.importedBanks[key]));
+    fireToast(`Imported ${pendingImport.matched.length} bank${pendingImport.matched.length === 1 ? '' : 's'}`);
+    setPendingImport(null);
+  };
+
+  return (
+    <Panel title="Export &amp; Import">
+      <button className="btn-primary" onClick={exportAll}>Export All Content</button>
+      <p style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>
+        Downloads everything — Statement of Inquiry, all rotation banks, rules, links,
+        the Timer, all of it — as one JSON file. Good for backups or moving to a new deploy.
+      </p>
+
+      <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #DCE3E0' }}>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="application/json"
+          onChange={onFileChosen}
+          style={{ marginBottom: 8 }}
+        />
+        {importError && <div className="error-text">{importError}</div>}
+
+        {pendingImport && (
+          <div style={{ padding: 8, background: '#FBF1DD', borderRadius: 8, marginTop: 6 }}>
+            <p style={{ fontSize: '0.8rem', margin: 0 }}>
+              This will overwrite {pendingImport.matched.length} bank{pendingImport.matched.length === 1 ? '' : 's'}:
+              {' '}{pendingImport.matched.join(', ')}.
+            </p>
+            <div className="row" style={{ marginTop: 6 }}>
+              <button className="btn-primary" onClick={confirmImport}>Import &amp; Overwrite</button>
+              <button className="btn-secondary" onClick={() => setPendingImport(null)}>Cancel</button>
+            </div>
+          </div>
+        )}
+        <p style={{ fontSize: '0.75rem', color: 'var(--ink-soft)', marginTop: 6 }}>
+          Importing replaces the matching banks entirely — it doesn't merge. Export a
+          fresh backup first if you want to be able to undo it.
+        </p>
+      </div>
+    </Panel>
+  );
+}
+
+
 function TimerPanel({ timer, onSave }) {
   const [label, setLabel] = useState(timer.label || 'Class Timer');
   const [minutes, setMinutes] = useState(Math.round((timer.durationSeconds || 900) / 60));
 
   const isRunning = !!timer.endsAt;
+  const isEnabled = !!timer.enabled;
+
+  const toggleEnabled = () => {
+    const next = { ...timer, label, enabled: !isEnabled };
+    // Turning it off also stops any active countdown, so it doesn't keep
+    // running invisibly and surprise you when you turn it back on.
+    if (isEnabled) {
+      const remaining = timer.endsAt ? Math.max(0, Math.round((timer.endsAt - Date.now()) / 1000)) : timer.remainingSeconds;
+      next.remainingSeconds = remaining;
+      next.endsAt = null;
+    }
+    onSave(next);
+  };
 
   const applyDuration = () => {
     const seconds = Math.max(1, Math.round(Number(minutes) || 0)) * 60;
@@ -200,7 +363,7 @@ function TimerPanel({ timer, onSave }) {
 
   const start = () => {
     const base = timer.remainingSeconds > 0 ? timer.remainingSeconds : timer.durationSeconds;
-    onSave({ ...timer, label, endsAt: Date.now() + base * 1000 });
+    onSave({ ...timer, label, enabled: true, endsAt: Date.now() + base * 1000 });
   };
 
   const pause = () => {
@@ -214,6 +377,10 @@ function TimerPanel({ timer, onSave }) {
 
   return (
     <Panel title="Timer / Countdown">
+      <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: '0.85rem', marginBottom: 8 }}>
+        <input type="checkbox" checked={isEnabled} onChange={toggleEnabled} />
+        Show timer on the display
+      </label>
       <input type="text" placeholder="Label (e.g. Class Timer)" value={label} onChange={(e) => setLabel(e.target.value)} />
       <div className="row">
         <input
@@ -232,7 +399,8 @@ function TimerPanel({ timer, onSave }) {
         <button className="btn-secondary" onClick={reset}>Reset</button>
       </div>
       <p style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>
-        {isRunning ? 'Running — visible on the display and in full-screen media view.' : 'Paused. Students only see the countdown, not these controls.'}
+        {!isEnabled ? 'Hidden from the display right now — check the box above to show it.' :
+          isRunning ? 'Running — visible on the display and in full-screen media view.' : 'Paused. Students only see the countdown, not these controls.'}
       </p>
     </Panel>
   );
@@ -392,6 +560,7 @@ export default function AdminMode({ banks, updateBank, sessionToken, onExit }) {
 
       <div className="admin-grid">
         <ChangePinPanel sessionToken={sessionToken} onChanged={() => fireToast('PIN updated')} />
+        <BackupPanel banks={banks} updateBank={updateBank} fireToast={fireToast} />
 
         <SOIPanel bank={banks.statementsOfInquiry} spanishEnabled={spanishEnabled} onSave={(v) => save('statementsOfInquiry', v)} />
 

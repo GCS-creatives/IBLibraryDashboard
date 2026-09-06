@@ -173,7 +173,7 @@ function InquiryQuestions({ bank, language }) {
   const q = resolveActive(bank);
   if (!q) return null;
   return (
-    <div className="card col-iq">
+    <div className="card">
       <p className="card-title"><IconBadge icon={MessageCircle} tone="green" />Today's Inquiry Questions</p>
       <div className="iq-item factual">
         <span className="iq-type" style={{ color: '#2E6E4E' }}><img className="iq-icon" src={iconFactual} alt="" /> Factual</span>
@@ -194,7 +194,7 @@ function InquiryQuestions({ bank, language }) {
 function LibraryLearningSpace({ media, onExpand }) {
   const current = media?.current;
   return (
-    <div className="card col-media">
+    <div className="card">
       <p className="card-title"><IconBadge icon={BookOpen} tone="navy" />Library Learning Space</p>
       <div className="learning-space" onClick={onExpand}>
         {!current && (
@@ -470,8 +470,14 @@ export default function DisplayMode({ banks, isFullscreen, onToggleFullscreen, o
         <StatementOfInquiry soi={banks.statementsOfInquiry} language={language} />
 
         <div className="main-row">
-          <InquiryQuestions bank={banks.inquiryQuestions} language={language} />
-          <LibraryLearningSpace media={banks.media} onExpand={() => setMediaExpanded(true)} />
+          <div className="col-iq">
+            <InquiryQuestions bank={banks.inquiryQuestions} language={language} />
+            <VoiceLevelCard voiceLevel={banks.voiceLevel} />
+          </div>
+          <div className="col-media">
+            <LibraryLearningSpace media={banks.media} onExpand={() => setMediaExpanded(true)} />
+            <ClockCard />
+          </div>
           <div className="sidebar-stack">
             <ATLSpotlight bank={banks.atlSpotlights} language={language} />
             <LearnerProfileSpotlight bank={banks.learnerProfileSpotlights} language={language} />
@@ -479,13 +485,7 @@ export default function DisplayMode({ banks, isFullscreen, onToggleFullscreen, o
           </div>
         </div>
 
-        <div className="bottom-row">
-          <LearnerProfileStrip attributes={banks.learnerProfile} language={language} />
-          <div className="time-voice-stack">
-            <ClockCard />
-            <VoiceLevelCard voiceLevel={banks.voiceLevel} />
-          </div>
-        </div>
+        <LearnerProfileStrip attributes={banks.learnerProfile} language={language} />
       </div>
 
       <BottomNav

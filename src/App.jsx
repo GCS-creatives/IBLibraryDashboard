@@ -12,14 +12,31 @@ export default function App() {
   const [sessionToken, setSessionToken] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Load every content bank on first mount.
+  // Load every content bank on first mount. Each fetched value is merged
+  // *under* the current default shape — if a bank's schema has changed
+  // since data was last saved (e.g. media went from a single `current`
+  // pointer to an `items` list), any keys missing from the stored value
+  // fall back to the default instead of being undefined and crashing
+  // the first render.
   useEffect(() => {
     let cancelled = false;
     (async () => {
       const loaded = {};
       for (const name of BANK_NAMES) {
         try {
-          loaded[name] = await getBank(name);
+          const fetched = await getBank(name);
+          const base = defaultContent[name];
+          let merged = (base && typeof base === 'object' && !Array.isArray(base) && fetched && typeof fetched === 'object')
+            ? { ...base, ...fetched }
+            : (fetched ?? base);
+          // Extra safety net: if a bank's shape defines an `items` array,
+          // never let a stale/malformed stored value replace it with
+          // something that isn't an array — that's what every rotation
+          // bank component assumes it can .map()/.length on.
+          if (base && Array.isArray(base.items) && !Array.isArray(merged?.items)) {
+            merged = { ...merged, items: base.items };
+          }
+          loaded[name] = merged;
         } catch {
           loaded[name] = defaultContent[name];
         }

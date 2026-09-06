@@ -186,7 +186,7 @@ function InquiryQuestions({ bank, language, onCycle }) {
     <div className="card">
       <p className={`card-title${clickable ? ' clickable' : ''}`} onClick={clickable ? onCycle : undefined}>
         <IconBadge icon={MessageCircle} tone="green" />Today's Inquiry Questions
-        <CycleHint onCycle={onCycle} count={bank.items.length} />
+        <CycleHint onCycle={onCycle} count={(bank.items || []).length} />
       </p>
       <div className="iq-item factual">
         <span className="iq-type" style={{ color: 'var(--green)' }}><img className="iq-icon" src={iconFactual} alt="" /> Factual</span>
@@ -211,7 +211,7 @@ function LibraryLearningSpace({ media, onExpand, onCycle }) {
     <div className="card">
       <p className={`card-title${clickable ? ' clickable' : ''}`} onClick={clickable ? onCycle : undefined}>
         <IconBadge icon={BookOpen} tone="navy" />Library Learning Space
-        <CycleHint onCycle={onCycle} count={media.items.length} />
+        <CycleHint onCycle={onCycle} count={(media.items || []).length} />
       </p>
       <div className="learning-space" onClick={onExpand}>
         {!current && (
@@ -319,7 +319,7 @@ function ATLSpotlight({ bank, language, onCycle }) {
   if (!item) return null;
   return (
     <div className="card banner-card">
-      <BannerHeader iconSrc={iconAtlTarget} tone="green" onCycle={onCycle} count={bank.items.length}>ATL Skill Spotlight</BannerHeader>
+      <BannerHeader iconSrc={iconAtlTarget} tone="green" onCycle={onCycle} count={(bank.items || []).length}>ATL Skill Spotlight</BannerHeader>
       <div className="banner-body">
         <div className="spotlight-row">
           <div className="spotlight-badge spotlight-badge-img">
@@ -343,7 +343,7 @@ function LearnerProfileSpotlight({ bank, language, onCycle }) {
   const iconSrc = LP_ICON_IMAGES[item.attribute];
   return (
     <div className="card banner-card">
-      <BannerHeader iconSrc={iconLearnerPerson} tone="navy" onCycle={onCycle} count={bank.items.length}>Learner Profile Spotlight</BannerHeader>
+      <BannerHeader iconSrc={iconLearnerPerson} tone="navy" onCycle={onCycle} count={(bank.items || []).length}>Learner Profile Spotlight</BannerHeader>
       <div className="banner-body">
         <div className="spotlight-row">
           <div className="spotlight-badge spotlight-badge-img">
@@ -386,7 +386,7 @@ function TodaysFocus({ bank, language, onCycle }) {
   const subtext = localize(item, 'subtext', language);
   return (
     <div className="card banner-card">
-      <BannerHeader iconSrc={iconFocusTarget} tone="green" onCycle={onCycle} count={bank.items.length}>Today's Focus</BannerHeader>
+      <BannerHeader iconSrc={iconFocusTarget} tone="green" onCycle={onCycle} count={(bank.items || []).length}>Today's Focus</BannerHeader>
       <div className="banner-body">
         <div className="focus-text">{localize(item, 'text', language)}</div>
         {subtext && <div className="focus-subtext"><img className="focus-leaf-icon" src={iconFocusLeaf} alt="" /> {subtext}</div>}

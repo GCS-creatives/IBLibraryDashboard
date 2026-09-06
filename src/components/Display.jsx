@@ -92,7 +92,7 @@ function InquiryQuestions({ bank, language }) {
 function LibraryLearningSpace({ media, onExpand }) {
   const current = media?.current;
   return (
-    <div className="card" style={{ gridRow: 'span 2' }}>
+    <div className="card learning-space-card">
       <p className="card-title">📖 Library Learning Space</p>
       <div className="learning-space" onClick={onExpand}>
         {!current && (

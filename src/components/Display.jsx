@@ -21,6 +21,36 @@ import iconRiskTaker from '../assets/attributes/risk-taker.png';
 import iconBalanced from '../assets/attributes/balanced.png';
 import iconReflective from '../assets/attributes/reflective.png';
 
+import iconFactual from '../assets/icons/factual.png';
+import iconConceptual from '../assets/icons/conceptual.png';
+import iconDebatable from '../assets/icons/debatable.png';
+import iconStatementLeaf from '../assets/icons/statement-leaf.png';
+import iconAtlTarget from '../assets/icons/atl-target.png';
+import iconAtlBook from '../assets/icons/atl-book.png';
+import iconLearnerPerson from '../assets/icons/learner-person.png';
+import iconFocusTarget from '../assets/icons/focus-target.png';
+import iconFocusLeaf from '../assets/icons/focus-leaf.png';
+import iconClock from '../assets/icons/clock.png';
+
+import navRules from '../assets/nav/rules.png';
+import navGarage from '../assets/nav/garage.png';
+import navDoer from '../assets/nav/doer.png';
+import navInstructional from '../assets/nav/instructional.png';
+import navPaisleyShelves from '../assets/nav/paisley-shelves.png';
+import navLowranceShelves from '../assets/nav/lowrance-shelves.png';
+import navCollections from '../assets/nav/collections.png';
+
+import mediaPlaceholder from '../assets/media/placeholder-books.png';
+import mediaPlayButton from '../assets/media/play-button.png';
+
+import headerWordmark from '../assets/header/wordmark.png';
+import headerSublineEn from '../assets/header/subline-en.png';
+import headerCenterSublineEn from '../assets/header/center-subline-en.png';
+import headerGlobe from '../assets/header/globe.png';
+import headerCuriosityBlock from '../assets/header/curiosity-block.png';
+import headerDivider from '../assets/header/divider.png';
+import headerScriptTagline from '../assets/header/script-tagline.png';
+
 const ATL_COLORS = {
   Research: '#2E6E4E',
   Thinking: '#2E6E4E',
@@ -41,30 +71,20 @@ const LP_ICON_IMAGES = {
   Caring: iconCaring, 'Risk-taker': iconRiskTaker, Balanced: iconBalanced, Reflective: iconReflective
 };
 
-const LP_ICONS = {
-  Inquirer: Search, Knowledgeable: BookOpen, Thinker: Brain, Communicator: MessageCircle,
-  Principled: Shield, 'Open-minded': Globe2, Caring: Heart, 'Risk-taker': Mountain,
-  Balanced: Scale, Reflective: Cloud
-};
-
-const LP_COLORS = {
-  Inquirer: 'var(--navy)', Knowledgeable: 'var(--green)', Thinker: 'var(--green)',
-  Communicator: 'var(--gold)', Principled: 'var(--navy)', 'Open-minded': 'var(--green)',
-  Caring: 'var(--gold)', 'Risk-taker': 'var(--navy)', Balanced: 'var(--green)', Reflective: 'var(--navy)'
-};
-
 function Header({ language, onToggleLanguage, spanishEnabled }) {
   return (
     <header className="lib-header">
       <div className="brand">
         <div className="brand-mark"><Library size={20} strokeWidth={2.2} /></div>
         <div>
-          <h1>PAISLEY <span className="accent">IB</span> LIBRARY</h1>
-          <div className="brand-subline">
-            {language === 'es'
-              ? 'PERSONAS \u00b7 IDEAS \u00b7 INFORMACI\u00d3N \u00b7 UN MA\u00d1ANA MEJOR'
-              : 'PEOPLE \u00b7 IDEAS \u00b7 INFORMATION \u00b7 A BRIGHTER TOMORROW'}
-          </div>
+          <img className="wordmark-img" src={headerWordmark} alt="Paisley IB Library" />
+          {language === 'es' ? (
+            <div className="brand-subline">
+              PERSONAS &middot; IDEAS &middot; INFORMACI&Oacute;N &middot; UN MA&Ntilde;ANA MEJOR
+            </div>
+          ) : (
+            <img className="brand-subline-img" src={headerSublineEn} alt="People · Ideas · Information · A Brighter Tomorrow" />
+          )}
         </div>
       </div>
       <div className="center-line">
@@ -73,17 +93,21 @@ function Header({ language, onToggleLanguage, spanishEnabled }) {
             ? 'Indagar \u00b7 Leer \u00b7 Crear \u00b7 Conectar \u00b7 Marcar la Diferencia'
             : 'Inquire \u00b7 Read \u00b7 Create \u00b7 Connect \u00b7 Make a Difference'}
         </div>
-        <div className="center-subline">
-          {language === 'es'
-            ? 'UNA BIBLIOTECA COMPARTIDA \u00b7 UNA COMUNIDAD PR\u00d3SPERA \u00b7 UN MUNDO M\u00c1S INCLUSIVO'
-            : 'A SHARED LIBRARY \u00b7 A THRIVING COMMUNITY \u00b7 A MORE INCLUSIVE WORLD'}
-        </div>
+        {language === 'es' ? (
+          <div className="center-subline">
+            UNA BIBLIOTECA COMPARTIDA &middot; UNA COMUNIDAD PR&Oacute;SPERA &middot; UN MUNDO M&Aacute;S INCLUSIVO
+          </div>
+        ) : (
+          <img className="center-subline-img" src={headerCenterSublineEn} alt="A Shared Library · A Thriving Community · A More Inclusive World" />
+        )}
       </div>
       <div className="side-note">
         <div className="side-note-top">
-          <Globe size={20} />
-          <span>Curiosity<br />Empathy<br />Knowledge<br />Action</span>
+          <img className="header-globe-img" src={headerGlobe} alt="" />
+          <img className="curiosity-block-img" src={headerCuriosityBlock} alt="Curiosity, Empathy, Knowledge, Action" />
         </div>
+        <img className="header-divider-img" src={headerDivider} alt="" />
+        <img className="header-script-img" src={headerScriptTagline} alt="Same Library. More Possibilities." />
         {spanishEnabled && (
           <button className="btn-secondary" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={onToggleLanguage}>
             {language === 'es' ? 'EN' : 'ES'}
@@ -102,10 +126,18 @@ function IconBadge({ icon: Icon, tone = 'navy', size = 16 }) {
   );
 }
 
-function BannerHeader({ icon: Icon, tone, children }) {
+function ImgBadge({ src, tone = 'navy', alt = '' }) {
+  return (
+    <span className={`title-badge tone-${tone} title-badge-img`}>
+      <img src={src} alt={alt} />
+    </span>
+  );
+}
+
+function BannerHeader({ icon: Icon, iconSrc, tone, children }) {
   return (
     <div className={`banner-header tone-bg-${tone}`}>
-      <Icon size={17} strokeWidth={2.2} />
+      {iconSrc ? <img className="banner-header-icon" src={iconSrc} alt="" /> : <Icon size={17} strokeWidth={2.2} />}
       <span>{children}</span>
     </div>
   );
@@ -130,7 +162,7 @@ function StatementOfInquiry({ soi, language }) {
   const active = resolveActiveSOI(soi);
   return (
     <div className="soi-bar">
-      <IconBadge icon={Sprout} tone="green" size={18} />
+      <ImgBadge src={iconStatementLeaf} tone="green" alt="" />
       <span className="label">Our Statement of Inquiry</span>
       <span>{localize(active, 'text', language)}</span>
     </div>
@@ -144,15 +176,15 @@ function InquiryQuestions({ bank, language }) {
     <div className="card col-iq">
       <p className="card-title"><IconBadge icon={MessageCircle} tone="green" />Today's Inquiry Questions</p>
       <div className="iq-item factual">
-        <span className="iq-type" style={{ color: '#2E6E4E' }}><Search size={14} /> Factual</span>
+        <span className="iq-type" style={{ color: '#2E6E4E' }}><img className="iq-icon" src={iconFactual} alt="" /> Factual</span>
         {localize(q, 'factual', language)}
       </div>
       <div className="iq-item conceptual">
-        <span className="iq-type" style={{ color: '#C9992E' }}><Lightbulb size={14} /> Conceptual</span>
+        <span className="iq-type" style={{ color: '#C9992E' }}><img className="iq-icon" src={iconConceptual} alt="" /> Conceptual</span>
         {localize(q, 'conceptual', language)}
       </div>
       <div className="iq-item debatable">
-        <span className="iq-type" style={{ color: '#2E6E4E' }}><MessageCircle size={14} /> Debatable</span>
+        <span className="iq-type" style={{ color: '#2E6E4E' }}><img className="iq-icon" src={iconDebatable} alt="" /> Debatable</span>
         {localize(q, 'debatable', language)}
       </div>
     </div>
@@ -166,14 +198,19 @@ function LibraryLearningSpace({ media, onExpand }) {
       <p className="card-title"><IconBadge icon={BookOpen} tone="navy" />Library Learning Space</p>
       <div className="learning-space" onClick={onExpand}>
         {!current && (
-          <div style={{ color: 'white', textAlign: 'center', padding: 20 }}>
-            <div style={{ fontSize: '1.4rem', marginBottom: 8 }} className="accent-script">
-              Ideas &middot; People &middot; Perspectives &middot; Change
+          <>
+            <img className="placeholder-bg" src={mediaPlaceholder} alt="" />
+            <div className="placeholder-scrim" />
+            <div className="placeholder-content">
+              <img className="placeholder-play" src={mediaPlayButton} alt="" />
+              <div style={{ fontSize: '1.4rem', marginTop: 12, marginBottom: 8 }} className="accent-script">
+                Ideas &middot; People &middot; Perspectives &middot; Change
+              </div>
+              <div style={{ fontSize: '0.8rem', opacity: 0.85 }}>
+                Add a video, slideshow, website, or resource in Admin Mode.
+              </div>
             </div>
-            <div style={{ fontSize: '0.8rem', opacity: 0.75 }}>
-              Add a video, slideshow, website, or resource in Admin Mode.
-            </div>
-          </div>
+          </>
         )}
         {current?.type === 'image' && <img src={current.url} alt={current.title || 'Library media'} />}
         {current && current.type !== 'image' && (
@@ -215,11 +252,11 @@ function ATLSpotlight({ bank, language }) {
   if (!item) return null;
   return (
     <div className="card banner-card">
-      <BannerHeader icon={Target} tone="green">ATL Skill Spotlight</BannerHeader>
+      <BannerHeader iconSrc={iconAtlTarget} tone="green">ATL Skill Spotlight</BannerHeader>
       <div className="banner-body">
         <div className="spotlight-row">
-          <div className="spotlight-badge" style={{ background: ATL_COLORS[item.category] || 'var(--green)' }}>
-            <BookOpen size={16} />
+          <div className="spotlight-badge spotlight-badge-img">
+            <img src={iconAtlBook} alt="" />
           </div>
           <div>
             <div style={{ fontWeight: 700, color: 'var(--navy)' }}>{item.category}</div>
@@ -239,7 +276,7 @@ function LearnerProfileSpotlight({ bank, language }) {
   const iconSrc = LP_ICON_IMAGES[item.attribute];
   return (
     <div className="card banner-card">
-      <BannerHeader icon={ShieldCheck} tone="navy">Learner Profile Spotlight</BannerHeader>
+      <BannerHeader iconSrc={iconLearnerPerson} tone="navy">Learner Profile Spotlight</BannerHeader>
       <div className="banner-body">
         <div className="spotlight-row">
           <div className="spotlight-badge spotlight-badge-img">
@@ -282,10 +319,10 @@ function TodaysFocus({ bank, language }) {
   const subtext = localize(item, 'subtext', language);
   return (
     <div className="card banner-card">
-      <BannerHeader icon={Sprout} tone="green">Today's Focus</BannerHeader>
+      <BannerHeader iconSrc={iconFocusTarget} tone="green">Today's Focus</BannerHeader>
       <div className="banner-body">
         <div className="focus-text">{localize(item, 'text', language)}</div>
-        {subtext && <div className="focus-subtext"><Sprout size={13} /> {subtext}</div>}
+        {subtext && <div className="focus-subtext"><img className="focus-leaf-icon" src={iconFocusLeaf} alt="" /> {subtext}</div>}
       </div>
     </div>
   );
@@ -302,7 +339,7 @@ function ClockCard({}) {
 
   return (
     <div className="card">
-      <p className="card-title"><IconBadge icon={Clock} tone="navy" />Current Time</p>
+      <p className="card-title"><ImgBadge src={iconClock} tone="navy" /> Current Time</p>
       <div className="clock-time">{timeStr}</div>
       <div className="clock-date">{dateStr}</div>
       <div className="clock-tagline">BE CURIOUS. BE KIND. BELONG HERE.</div>
@@ -328,26 +365,32 @@ function VoiceLevelCard({ voiceLevel }) {
 
 function BottomNav({ onOpen, footerHint, onFooterClick }) {
   const buttons = [
-    { key: 'rules', label: 'Library Rules', sub: '', icon: ListChecks },
-    { key: 'garage', label: 'The Garage', sub: 'Green Screen Room', icon: Camera },
-    { key: 'doer', label: 'DOER Maker Space', sub: 'Create · Collaborate', icon: Wrench },
-    { key: 'instructional', label: 'Instructional Space', sub: '', icon: Users },
-    { key: 'paisleyShelves', label: 'Paisley Shelves', sub: '', icon: BookOpen },
-    { key: 'lowranceShelves', label: 'Lowrance Shelves', sub: '', icon: BookOpen },
-    { key: 'collections', label: 'Special Collections', sub: '', icon: Star },
-    { key: 'research', label: 'Links', sub: '', icon: Link2 }
+    { key: 'rules', label: 'Library Rules', sub: '', icon: ListChecks, img: navRules },
+    { key: 'garage', label: 'The Garage', sub: 'Green Screen Room', icon: Camera, img: navGarage },
+    { key: 'doer', label: 'DOER Maker Space', sub: 'Create · Collaborate', icon: Wrench, img: navDoer },
+    { key: 'instructional', label: 'Instructional Space', sub: '', icon: Users, img: navInstructional },
+    { key: 'paisleyShelves', label: 'Paisley Shelves', sub: '', icon: BookOpen, img: navPaisleyShelves },
+    { key: 'lowranceShelves', label: 'Lowrance Shelves', sub: '', icon: BookOpen, img: navLowranceShelves },
+    { key: 'collections', label: 'Special Collections', sub: '', icon: Star, img: navCollections },
+    { key: 'research', label: 'Links', sub: '', icon: Link2, img: null }
   ];
   return (
     <nav className="bottom-nav">
       <div className="nav-buttons">
         {buttons.map((b) => (
-          <button key={b.key} className="nav-btn" onClick={() => onOpen(b.key)}>
-            <b.icon size={16} className="nav-icon" />
-            <span className="nav-btn-text">
-              <span>{b.label}</span>
-              {b.sub && <span className="sub">{b.sub}</span>}
-            </span>
-          </button>
+          b.img ? (
+            <button key={b.key} className="nav-btn nav-btn-img" onClick={() => onOpen(b.key)}>
+              <img src={b.img} alt={b.label} />
+            </button>
+          ) : (
+            <button key={b.key} className="nav-btn" onClick={() => onOpen(b.key)}>
+              <b.icon size={16} className="nav-icon" />
+              <span className="nav-btn-text">
+                <span>{b.label}</span>
+                {b.sub && <span className="sub">{b.sub}</span>}
+              </span>
+            </button>
+          )
         ))}
       </div>
       <div className="footer-line" onClick={onFooterClick} title="">

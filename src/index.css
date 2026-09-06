@@ -92,12 +92,25 @@ button {
   color: var(--gold);
 }
 
+.wordmark-img {
+  display: block;
+  height: clamp(18px, 1.8vw + 8px, 28px);
+  width: auto;
+}
+
 .brand-subline {
   font-size: 0.68rem;
   color: var(--ink-soft);
   letter-spacing: 0.04em;
   font-weight: 600;
   margin-top: 2px;
+}
+
+.brand-subline-img {
+  display: block;
+  height: 10px;
+  width: auto;
+  margin-top: 4px;
 }
 
 .lib-header .center-line {
@@ -118,6 +131,13 @@ button {
   margin-top: 3px;
 }
 
+.center-subline-img {
+  display: block;
+  height: 10px;
+  width: auto;
+  margin: 4px auto 0;
+}
+
 .lib-header .side-note {
   font-size: 0.75rem;
   color: var(--ink-soft);
@@ -130,9 +150,31 @@ button {
 
 .side-note-top {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 6px;
   color: var(--navy);
+}
+
+.header-globe-img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.curiosity-block-img {
+  height: 44px;
+  width: auto;
+}
+
+.header-divider-img {
+  height: 40px;
+  width: auto;
+}
+
+.header-script-img {
+  height: 40px;
+  width: auto;
 }
 
 /* ---------- Dashboard layout (flexbox columns — each sizes to its own
@@ -247,6 +289,16 @@ button {
 .title-badge.tone-green { background: var(--green); }
 .title-badge.tone-gold { background: var(--gold); }
 
+.title-badge-img {
+  background: transparent !important;
+}
+
+.title-badge-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 /* ---------- Banner-header cards (ATL / Learner Profile / Today's Focus) ---------- */
 
 .banner-card {
@@ -265,6 +317,13 @@ button {
   font-size: clamp(0.8rem, 0.3vw + 0.75rem, 0.9rem);
   text-transform: uppercase;
   letter-spacing: 0.02em;
+}
+
+.banner-header-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .tone-bg-navy { background: var(--navy); }
@@ -296,6 +355,12 @@ button {
   margin-bottom: 4px;
 }
 
+.iq-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
 .iq-item.factual { background: #EAF3FB; border-left-color: #3E7CB1; }
 .iq-item.conceptual { background: var(--gold-soft); border-left-color: var(--gold); }
 .iq-item.debatable { background: var(--green-soft); border-left-color: var(--green); }
@@ -315,7 +380,38 @@ button {
   cursor: pointer;
 }
 
-.learning-space img, .learning-space iframe {
+.placeholder-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 27, 50, 0.55);
+}
+
+.placeholder-content {
+  position: relative;
+  z-index: 1;
+  color: var(--white);
+  text-align: center;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.placeholder-play {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.learning-space > img, .learning-space > iframe {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -469,6 +565,15 @@ button {
 .focus-subtext {
   font-size: 0.85rem;
   color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.focus-leaf-icon {
+  width: 13px;
+  height: 13px;
+  object-fit: contain;
 }
 
 .clock-time {
@@ -539,6 +644,20 @@ button {
   gap: 8px;
   min-width: 0;
   flex-shrink: 0;
+}
+
+.nav-btn-img {
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.nav-btn-img img {
+  display: block;
+  height: 40px;
+  width: auto;
 }
 
 .nav-icon {
@@ -828,10 +947,14 @@ button {
   .admin-topbar h1 { font-size: 1.15rem; }
 
   .brand-mark { width: 36px; height: 36px; }
-  .brand-subline, .center-subline { display: none; }
-  .side-note-top span { display: none; }
+  .brand-subline, .center-subline,
+  .brand-subline-img, .center-subline-img { display: none; }
+  .side-note-top span,
+  .curiosity-block-img,
+  .header-divider-img, .header-script-img { display: none; }
   .banner-header { font-size: 0.72rem; padding: 8px 12px; }
   .nav-btn .sub { display: none; }
+  .nav-btn-img img { height: 34px; }
 }
 
 @media (max-width: 700px) {

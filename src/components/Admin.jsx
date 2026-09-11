@@ -246,7 +246,7 @@ function BackupPanel({ banks, updateBank, fireToast }) {
   const exportAll = () => {
     const payload = {
       exportedAt: new Date().toISOString(),
-      app: 'paisley-ib-library',
+      app: 'panther-library',
       banks
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -254,7 +254,7 @@ function BackupPanel({ banks, updateBank, fireToast }) {
     const a = document.createElement('a');
     const dateStr = new Date().toISOString().slice(0, 10);
     a.href = url;
-    a.download = `paisley-ib-library-backup-${dateStr}.json`;
+    a.download = `panther-library-backup-${dateStr}.json`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -272,7 +272,7 @@ function BackupPanel({ banks, updateBank, fireToast }) {
         const parsed = JSON.parse(reader.result);
         const importedBanks = parsed && parsed.banks && typeof parsed.banks === 'object' ? parsed.banks : parsed;
         if (!importedBanks || typeof importedBanks !== 'object') {
-          throw new Error('This file doesn\u2019t look like a Paisley IB Library backup.');
+          throw new Error('This file doesn\u2019t look like a Panther Library backup.');
         }
         // Only accept keys that are actually known content banks — never
         // let an imported file introduce arbitrary/unexpected data.
@@ -554,7 +554,7 @@ export default function AdminMode({ banks, updateBank, sessionToken, onExit }) {
   return (
     <div className="admin-shell">
       <div className="admin-topbar">
-        <h1>Paisley IB Library — Admin Mode</h1>
+        <h1>Panther Library — Admin Mode</h1>
         <button className="btn-secondary" onClick={onExit}>← Back to Display</button>
       </div>
 
@@ -694,7 +694,7 @@ export default function AdminMode({ banks, updateBank, sessionToken, onExit }) {
           onSaveEs={(v) => save('spaces', { ...banks.spaces, es: { ...banks.spaces.es, instructional: v } })}
         />
         <StringListPanel
-          title="Paisley Shelves Notes" list={banks.spaces.paisleyShelves} esList={banks.spaces.es?.paisleyShelves}
+          title="Panther Shelves Notes" list={banks.spaces.paisleyShelves} esList={banks.spaces.es?.paisleyShelves}
           spanishEnabled={spanishEnabled}
           onSave={(v) => save('spaces', { ...banks.spaces, paisleyShelves: v })}
           onSaveEs={(v) => save('spaces', { ...banks.spaces, es: { ...banks.spaces.es, paisleyShelves: v } })}

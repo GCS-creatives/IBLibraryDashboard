@@ -1,4 +1,4 @@
-# Paisley IB Library
+# Panther Library
 
 *A GCS Creative Project by Grace Campbell-Sheran © 2026. All rights reserved.*
 
@@ -12,8 +12,7 @@ Netlify, content stored in Netlify Blobs. Icons via `lucide-react`.
 Learning Space (saved-link library with full-screen expand), ATL Skill Spotlight,
 Learner Profile Spotlight, Today's Focus, the 10-attribute Learner Profile strip,
 live Clock, Voice Level, a Timer/countdown, bottom nav, and every student-safe
-overlay (Library Rules, The Garage, DOER Maker Space, Instructional Space, Paisley
-Shelves, Lowrance Shelves, Special Collections, Links).
+overlay (Library Rules, The Garage, DOER Maker Space, Instructional Space, Panther Shelves, Lowrance Shelves, Special Collections, Links).
 
 **Tap-to-cycle:** the title bar of any rotating card (Inquiry Questions, ATL
 Spotlight, Learner Profile Spotlight, Today's Focus, Statement of Inquiry, and
@@ -65,9 +64,9 @@ mock mode is `0000`.
    ```bash
    git init
    git add .
-   git commit -m "Initial Paisley IB Library scaffold"
+   git commit -m "Initial Panther Library scaffold"
    git branch -M main
-   git remote add origin https://github.com/<your-username>/paisley-ib-library.git
+   git remote add origin https://github.com/<your-username>/panther-library.git
    git push -u origin main
    ```
 

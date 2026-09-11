@@ -77,7 +77,7 @@ export default function App() {
   }, []);
 
   if (!banks) {
-    return <div style={{ padding: 40, color: 'var(--navy)' }}>Loading Paisley IB Library…</div>;
+    return <div style={{ padding: 40, color: 'var(--navy)' }}>Loading Panther Library…</div>;
   }
 
   if (mode === 'admin') {

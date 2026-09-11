@@ -92,12 +92,6 @@ button {
   color: var(--gold);
 }
 
-.wordmark-img {
-  display: block;
-  height: clamp(18px, 1.8vw + 8px, 28px);
-  width: auto;
-}
-
 .brand-subline {
   font-size: 0.68rem;
   color: var(--ink-soft);

@@ -36,14 +36,12 @@ import navRules from '../assets/nav/rules.png';
 import navGarage from '../assets/nav/garage.png';
 import navDoer from '../assets/nav/doer.png';
 import navInstructional from '../assets/nav/instructional.png';
-import navPaisleyShelves from '../assets/nav/paisley-shelves.png';
 import navLowranceShelves from '../assets/nav/lowrance-shelves.png';
 import navCollections from '../assets/nav/collections.png';
 
 import mediaPlaceholder from '../assets/media/placeholder-books.png';
 import mediaPlayButton from '../assets/media/play-button.png';
 
-import headerWordmark from '../assets/header/wordmark.png';
 import headerSublineEn from '../assets/header/subline-en.png';
 import headerCenterSublineEn from '../assets/header/center-subline-en.png';
 import headerGlobe from '../assets/header/globe.png';
@@ -77,7 +75,7 @@ function Header({ language, onToggleLanguage, spanishEnabled }) {
       <div className="brand">
         <div className="brand-mark"><Library size={20} strokeWidth={2.2} /></div>
         <div>
-          <img className="wordmark-img" src={headerWordmark} alt="Paisley IB Library" />
+          <h1>PANTHER <span className="accent">LIBRARY</span></h1>
           {language === 'es' ? (
             <div className="brand-subline">
               PERSONAS &middot; IDEAS &middot; INFORMACI&Oacute;N &middot; UN MA&Ntilde;ANA MEJOR
@@ -466,7 +464,7 @@ function BottomNav({ onOpen, footerHint, onFooterClick }) {
     { key: 'garage', label: 'The Garage', sub: 'Green Screen Room', icon: Camera, img: navGarage },
     { key: 'doer', label: 'DOER Maker Space', sub: 'Create · Collaborate', icon: Wrench, img: navDoer },
     { key: 'instructional', label: 'Instructional Space', sub: '', icon: Users, img: navInstructional },
-    { key: 'paisleyShelves', label: 'Paisley Shelves', sub: '', icon: BookOpen, img: navPaisleyShelves },
+    { key: 'paisleyShelves', label: 'Panther Shelves', sub: '', icon: BookOpen, img: null },
     { key: 'lowranceShelves', label: 'Lowrance Shelves', sub: '', icon: BookOpen, img: navLowranceShelves },
     { key: 'collections', label: 'Special Collections', sub: '', icon: Star, img: navCollections },
     { key: 'research', label: 'Links', sub: '', icon: Link2, img: null }
@@ -630,7 +628,7 @@ export default function DisplayMode({ banks, isFullscreen, onToggleFullscreen, o
         <SpaceModal title="Instructional Space" items={banks.spaces.instructional} esItems={banks.spaces.es?.instructional} language={language} onClose={() => setOpenOverlay(null)} />
       )}
       {openOverlay === 'paisleyShelves' && (
-        <SpaceModal title="Paisley Shelves" items={banks.spaces.paisleyShelves} esItems={banks.spaces.es?.paisleyShelves} language={language} onClose={() => setOpenOverlay(null)} />
+        <SpaceModal title="Panther Shelves" items={banks.spaces.paisleyShelves} esItems={banks.spaces.es?.paisleyShelves} language={language} onClose={() => setOpenOverlay(null)} />
       )}
       {openOverlay === 'lowranceShelves' && (
         <SpaceModal title="Lowrance Shelves" items={banks.spaces.lowranceShelves} esItems={banks.spaces.es?.lowranceShelves} language={language} onClose={() => setOpenOverlay(null)} />
